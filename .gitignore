@@ -16,6 +16,9 @@ bpjs_prpl/.DS_Store
 
 # Expo-generated patterns
 bpjs_prpl/expo-env.d.ts
+
+# Django
+server/.env
 =======
 myenv
 >>>>>>> origin/front

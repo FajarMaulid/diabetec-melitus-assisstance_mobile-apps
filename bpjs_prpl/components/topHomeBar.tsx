@@ -16,7 +16,7 @@ const TopHomeBar = () => {
       <Text style={styles.healthCareText}>Health Care</Text>
       <View style={styles.profileContainer}>
         {/* <TouchableOpacity onPress={handleProfilePress}> */}
-          <MiniProfile />
+          {/* <MiniProfile /> */}
         {/* </TouchableOpacity> */}
       </View>
     </View>

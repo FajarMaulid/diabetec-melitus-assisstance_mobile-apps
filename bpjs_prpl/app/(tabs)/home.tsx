@@ -8,8 +8,6 @@ import Other from '@/components/other'
 const Home = () => {
   return (
     <View >
-      <TopHomeBar />
-      <View style={{ height: 14, backgroundColor: '#00541B' }} />
       <Control />
       <View style={{ height: 14, backgroundColor: '#00541B' }} />
       <Step />
