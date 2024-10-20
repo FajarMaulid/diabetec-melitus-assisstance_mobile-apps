@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 bpjs_prpl/node_modules/
 bpjs_prpl/.expo/
 bpjs_prpl/dist/
@@ -19,6 +18,3 @@ bpjs_prpl/expo-env.d.ts
 
 # Django
 server/.env
-=======
-myenv
->>>>>>> origin/front
