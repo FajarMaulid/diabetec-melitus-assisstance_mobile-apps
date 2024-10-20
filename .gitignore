@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 node_modules/
 .expo/
 dist/
@@ -22,3 +23,28 @@ expo-env.d.ts
 =======
 myenv
 >>>>>>> origin/front
+=======
+bpjs_prpl/node_modules/
+bpjs_prpl/.expo/
+bpjs_prpl/dist/
+bpjs_prpl/npm-debug.*
+bpjs_prpl/*.jks
+bpjs_prpl/*.p8
+bpjs_prpl/*.p12
+bpjs_prpl/*.key
+bpjs_prpl/*.mobileprovision
+bpjs_prpl/*.orig.*
+bpjs_prpl/web-build/
+
+# macOS
+bpjs_prpl/.DS_Store
+
+# Expo-generated patterns
+bpjs_prpl/expo-env.d.ts
+
+# Django
+server/.env
+=======
+myenv
+>>>>>>> origin/front
+>>>>>>> 42d3cde9db0af8e72c8e536219078c97a10b8fd6
