@@ -4,7 +4,7 @@ import React from 'react'
 const Step = () => {
   return (
     <View style={ styles.container }>
-      <View style={ styles.gayBox }>  
+      <View style={ styles.grayBox }>  
         <Text style={ styles.text }>Step Yang Dilakukan</Text>
       </View>
     </View>
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    gayBox: {
+    grayBox: {
         // flex: 1,
         backgroundColor: '#d9d9d9',
         justifyContent: 'center',
