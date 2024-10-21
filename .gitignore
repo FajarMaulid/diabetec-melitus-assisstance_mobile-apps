@@ -20,4 +20,7 @@ bpjs_prpl/expo-env.d.ts
 server/.env
 server/myenv
 server/__pycache__
+server/myapp/__pycache__
+server/myapp/migrations
+server/server/__pycache__
 bpjs_prpl/.env
