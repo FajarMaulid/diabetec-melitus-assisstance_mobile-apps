@@ -38,13 +38,13 @@ export default Control
 
 const styles = StyleSheet.create({
     general : {
-        flex: 1,
+        // flex: 1,
         // justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'white',
     },
     outerContainer: {
-        flex: 1,
+        // flex: 1,
         backgroundColor: '#white',
         justifyContent: 'center',
         alignItems: 'center',

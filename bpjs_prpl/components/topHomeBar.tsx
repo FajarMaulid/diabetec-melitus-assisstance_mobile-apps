@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 8,
     backgroundColor: 'white',
-    height: 65,
+    // height: 65,
   },
   bpjsText: {
     fontSize: 24,

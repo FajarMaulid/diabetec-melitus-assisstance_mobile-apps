@@ -4,7 +4,7 @@ import React from 'react'
 const MiniProfile = () => {
   return (
     <View>
-      <Image source={ require('../assets/images/profile.png') } style={{ width: 30, height: 30, borderRadius: 15, marginRight: 15 }} />
+      <Image source={ require('../assets/images/profile.png') } style={{ width: 30, height: 30, borderRadius: 15, marginRight: 20 }} />
     </View>
   )
 }

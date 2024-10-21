@@ -19,6 +19,7 @@ bpjs_prpl/expo-env.d.ts
 
 # Django
 server/.env
+bpjs_prpl/.env
 =======
 myenv
 >>>>>>> origin/front
