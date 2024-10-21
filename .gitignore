@@ -18,4 +18,6 @@ bpjs_prpl/expo-env.d.ts
 
 # Django
 server/.env
+server/myenv
+server/__pycache__
 bpjs_prpl/.env
