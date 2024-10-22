@@ -14,6 +14,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import authenticate
 from datetime import datetime
+from pymongo import DESCENDING
 
 
 
@@ -116,3 +117,30 @@ class KonsumsiListView(APIView):
             })
             return Response({"message": "Data uploaded successfully!"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LatestAktivitasData(APIView):
+    def get(self, request, *args, **kwargs):
+        aktivitasTerakhir = aktivitasFisik.find_one({}, sort=[("createdAt", DESCENDING)])
+
+        if aktivitasTerakhir:
+            serializer = AktivitasFisikSerializer(aktivitasTerakhir)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"message": "No data found"}, status=status.HTTP_404_NOT_FOUND)
+    
+class LatestGulaDarahData(APIView):
+    def get(self, request, *args, **kwargs):
+        gulaDarahTerakhir = gulaDarah.find_one({}, sort=[("createdAt", DESCENDING)])
+
+        if gulaDarahTerakhir:
+            serializer = GulaDarahSerializer(gulaDarahTerakhir)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"message": "No data found"}, status=status.HTTP_404_NOT_FOUND)
+    
+class LatestKonsumsiData(APIView):
+    def get(self, request, *args, **kwargs):
+        konsumsiTerakhir = konsumsi.find_one({}, sort=[("createdAt", DESCENDING)])
+
+        if konsumsiTerakhir:
+            serializer = KonsumsiSerializer(konsumsiTerakhir)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"message": "No data found"}, status=status.HTTP_404_NOT_FOUND)
