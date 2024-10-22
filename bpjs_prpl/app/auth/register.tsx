@@ -1,8 +1,11 @@
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Register = () => {
+  const navigation = useNavigation<NavigationProp<any>>();
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
@@ -114,8 +117,16 @@ const Register = () => {
             secureTextEntry
         />
     </View>
+    <View style={styles.buttonGroup}>
+        <View style={styles.buttonGroupLeftContainer}>
+            <Text>Already have an account?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('login')}>
+                <Text style={{ color: "blue" }}>Login</Text>
+            </TouchableOpacity>
+        </View>
+        <Button title="Register" onPress={handleRegister} />
+    </View>
 
-    { loading ? <View /> : <Button title="Register" onPress={handleRegister} /> }
 </View>
   );
 }
@@ -147,7 +158,18 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 4,
     fontWeight: 'bold',
-},
+  },
+  buttonGroup: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '80%',
+    marginBottom: 10,
+  },
+  buttonGroupLeftContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 })
 
 export default Register

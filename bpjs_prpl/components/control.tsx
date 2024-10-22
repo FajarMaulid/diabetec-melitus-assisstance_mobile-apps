@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     },
     innerContainer1: {
         flex: 1,
-        backgroundColor: '#161EFF',
+        backgroundColor: '#14B8AD',
         justifyContent: 'center',
         alignItems: 'center',
         width: '90%',
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     },
     innerContainer3: {
         flex: 1,
-        backgroundColor: '#161EFF',
+        backgroundColor: '#14B8AD',
         justifyContent: 'center',
         alignItems: 'center',
         width: '90%',

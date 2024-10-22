@@ -1,8 +1,10 @@
-import { TextInput, Button, View, Text , StyleSheet} from 'react-native';
+import { TextInput, Button, View, Text , StyleSheet, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 const Login = () => {
+    const navigation = useNavigation<NavigationProp<any>>();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -30,8 +32,7 @@ const Login = () => {
                 await AsyncStorage.setItem('accessToken', data.access);
                 await AsyncStorage.setItem('refreshToken', data.refresh);
                 console.log('Login successful!');
-                console.log('Access token:', data.access);
-                console.log('Refresh token:', data.refresh);
+                navigation.navigate('home');
               } else {
                 console.error('Login failed:', data.detail);
               }
@@ -45,6 +46,8 @@ const Login = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Login</Text>
+            <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -53,6 +56,9 @@ const Login = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
+            </View>
+            <View style={styles.inputGroup}>
+            <Text style={styles.label}>Password</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Password"
@@ -60,7 +66,16 @@ const Login = () => {
                 onChangeText={setPassword}
                 secureTextEntry
             />
-            <Button title="Login" onPress={handleLogin} />
+            </View>
+            <View style={styles.buttonGroup}>
+            <View style={styles.buttonGroupLeftContainer}>
+                <Text>Don't have an account?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('register')}>
+                    <Text style={{ color: "blue" }}>Register</Text>
+                </TouchableOpacity>
+                </View>
+                <Button title="Login" onPress={handleLogin} />
+            </View>
         </View>
     );
 }
@@ -68,22 +83,42 @@ const Login = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        marginTop:50,
+        // justifyContent: 'center',
         alignItems: 'center',
     },
     title: {
         fontSize: 24,
-        marginBottom: 24,
+        margin: 24,
+    },
+    inputGroup: { 
+      width: '80%',         
+      marginBottom: 10,
     },
     input: {
-        width: '80%',
+        width: '100%',
         height: 48,
         borderRadius: 8,
         borderWidth: 1,
         borderColor: 'black',
-        marginBottom: 16,
+        marginBottom: 10,
         padding: 8,
     },
+    label: {
+      marginBottom: 4,
+      fontWeight: 'bold',
+  },
+  buttonGroup: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '80%',
+    marginBottom: 10,
+  },
+  buttonGroupLeftContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 })
 
 export default Login
