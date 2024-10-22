@@ -1,20 +1,25 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import React from 'react'
-import TopHomeBar from '@/components/topHomeBar'
 import Control from '@/components/control'
-import Step from '@/components/step'
-import Other from '@/components/other'
+import Konsumsi from '@/components/homeComponents/konsumsi'
+import GulaDarah from '@/components/homeComponents/guladarah'
+import AktivitasTerakhir from '@/components/homeComponents/aktivitasTerakhir'
+import KontrolTerakhir from '@/components/homeComponents/controlTerakhir'
+import KontrolSelanjutnya from '@/components/homeComponents/controlSelanjutnya'
+import CuciDarahSelanjutnya from '@/components/homeComponents/cuciDarahSelanjutnya'
 
 const Home = () => {
+  
   return (
-    <View >
+    <ScrollView contentContainerStyle={ styles.container }>
       <View style={{ height: 14, backgroundColor: '#00541B' }} />
-      <Control />
-      <View style={{ height: 14, backgroundColor: '#00541B' }} />
-      <Step />
-      <View style={{ height: 14, backgroundColor: '#00541B' }} />
-      <Other />
-    </View>
+      <KontrolTerakhir />
+      <KontrolSelanjutnya />
+      <CuciDarahSelanjutnya />
+      <Konsumsi />
+      <GulaDarah />
+      <AktivitasTerakhir />
+    </ScrollView>
   )
 }
 

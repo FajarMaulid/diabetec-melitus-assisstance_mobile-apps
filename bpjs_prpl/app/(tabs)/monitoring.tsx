@@ -15,16 +15,7 @@ const Monitoring = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch('http://localhost:8000/myapp/');
-      const data = await response.json();
-      
-      
-      // Assuming data is an array of user objects
-      // const formattedData = data.map((user: any) => ({
-      //   _id: user._id,
-      //   username: user.username || 'No username', // Handle cases with no username
-      //   email: user.email || 'No email', // Handle cases with no email
-      // }));
-      
+      const data = await response.json();      
       setItems(data);
     };
 
@@ -37,7 +28,7 @@ const Monitoring = () => {
       <Text>Items:</Text>
       <FlatList
         data={items}
-        keyExtractor={(item) => item._id.toString()} // Pastikan _id diubah menjadi string
+        keyExtractor={(item) => item._id.toString()}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
             <Text>Username: {item.username}</Text>

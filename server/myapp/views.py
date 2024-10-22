@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from db_connection import user_collection
+from db_connection import user_collection, aktivitasFisik, gulaDarah, konsumsi
 from rest_framework import generics
-from .serializer import UserSerializer
+from .serializer import UserSerializer, AktivitasFisikSerializer, GulaDarahSerializer, KonsumsiSerializer
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
@@ -13,6 +13,8 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import authenticate
+from datetime import datetime
+from pymongo import DESCENDING
 
 
 
@@ -54,3 +56,91 @@ class LoginView(TokenObtainPairView):
             })
         return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
+class AktivitasFisikListView(APIView):
+    def get(self, request, *args, **kwargs):
+        data = list(aktivitasFisik.find({}, {"_id": 0}))
+        
+        serializer = AktivitasFisikSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        serializer = AktivitasFisikSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            aktivitasFisik.insert_one({
+                "olahraga": serializer.validated_data['olahraga'],
+                "durasi": serializer.validated_data['durasi'],
+                "createdAt": datetime.now(),
+                # "jadwal": serializer.validated_data['jadwalOlahraga']
+            })
+            return Response({"message": "Data uploaded successfully!"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class GulaDarahListView(APIView):
+    def get(self, request, *args, **kwargs):
+        data = list(gulaDarah.find({}, {"_id": 0}))
+        
+        serializer = GulaDarahSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        serializer = GulaDarahSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            gulaDarah.insert_one({
+                "hasilPengukuran": serializer.validated_data['hasilPengukuran'],
+                "petugas": serializer.validated_data['petugas'],
+                "tempat": serializer.validated_data['tempat'],
+                # "jadwal": serializer.validated_data['jadwal'],
+                "createdAt": datetime.now(),       
+            })
+            return Response({"message": "Data uploaded successfully!"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class KonsumsiListView(APIView):
+    def get(self, request, *args, **kwargs):
+        data = list(konsumsi.find({}, {"_id": 0}))
+        
+        serializer = KonsumsiSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        serializer = KonsumsiSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            konsumsi.insert_one({
+                "tipe": serializer.validated_data['tipe'],
+                "nama": serializer.validated_data['nama'],
+                "massaOrVol": serializer.validated_data['massaOrVol'],
+                # "jadwal": serializer.validated_data['jadwal'],
+                "createdAt": datetime.now(),       
+            })
+            return Response({"message": "Data uploaded successfully!"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LatestAktivitasData(APIView):
+    def get(self, request, *args, **kwargs):
+        aktivitasTerakhir = aktivitasFisik.find_one({}, sort=[("createdAt", DESCENDING)])
+
+        if aktivitasTerakhir:
+            serializer = AktivitasFisikSerializer(aktivitasTerakhir)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"message": "No data found"}, status=status.HTTP_404_NOT_FOUND)
+    
+class LatestGulaDarahData(APIView):
+    def get(self, request, *args, **kwargs):
+        gulaDarahTerakhir = gulaDarah.find_one({}, sort=[("createdAt", DESCENDING)])
+
+        if gulaDarahTerakhir:
+            serializer = GulaDarahSerializer(gulaDarahTerakhir)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"message": "No data found"}, status=status.HTTP_404_NOT_FOUND)
+    
+class LatestKonsumsiData(APIView):
+    def get(self, request, *args, **kwargs):
+        konsumsiTerakhir = konsumsi.find_one({}, sort=[("createdAt", DESCENDING)])
+
+        if konsumsiTerakhir:
+            serializer = KonsumsiSerializer(konsumsiTerakhir)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"message": "No data found"}, status=status.HTTP_404_NOT_FOUND)

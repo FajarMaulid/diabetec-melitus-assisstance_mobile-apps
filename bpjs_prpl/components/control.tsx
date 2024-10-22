@@ -3,8 +3,8 @@ import React from 'react'
 
 const Control = () => {
   return (
-    <View style={styles.general}>
-      <View style={styles.outerContainer}>
+    <View>
+      {/* <View style={styles.outerContainer}> */}
         <View style={styles.innerContainer1}>
           <Text style={styles.text}>
             Kontrol Terakhir
@@ -29,7 +29,7 @@ const Control = () => {
             besok
           </Text>
         </View>
-      </View>
+      {/* </View> */}
     </View>
   )
 }
@@ -39,7 +39,7 @@ export default Control
 const styles = StyleSheet.create({
     general : {
         // flex: 1,
-        // justifyContent: 'center',
+        justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'white',
     },
@@ -49,8 +49,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         height: 300,
-        width: '100%',
-        margin: 10,
+        width: '50%',
+        // margin: 10,
         borderRadius: 27,
     },
     innerContainer1: {
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#14B8AD',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '90%',
+        width: '100%',
         marginBottom: 20,
         borderRadius: 27,
         padding: 27,
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#00852A',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '90%',
+        width: '100%',
         marginBottom: 20,
         borderRadius: 27,
         padding: 27,
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#14B8AD',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '90%',
+        width: '100%',
         marginBottom: 0,
         borderRadius: 27,
         padding: 27,
