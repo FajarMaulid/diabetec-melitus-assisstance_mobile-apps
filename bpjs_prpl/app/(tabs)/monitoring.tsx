@@ -1,6 +1,6 @@
 import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 
 const Monitoring = () => {
   interface Item {
@@ -28,18 +28,18 @@ const Monitoring = () => {
   //   fetchData();
   // }, []);
   const handleSubmit = async () => {
-    const response = await fetch('http://localhost:8000/myapp/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: 'user',
-        email: 'email',
-        category: 'category',
-        password: 'password',
-      }),
-    });
+    // const response = await fetch('http://localhost:8000/myapp/', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     username: 'user',
+    //     email: 'email',
+    //     category: 'category',
+    //     password: 'password',
+    //   }),
+    // });
   };
 
   console.log(items);
@@ -47,50 +47,53 @@ const Monitoring = () => {
     <View style={styles.container}>
       <TouchableOpacity onPress={() => setIsModalOpen(true)}>
         <Text>
-          (+)
+          +
         </Text>
       </TouchableOpacity>
       { isModalOpen && (
         <View style={styles.overlay}>
           <View style={styles.modal}>
-            <View style={styles.header}>
-              <Text>Pengisian Aktivitas</Text>
-              <TouchableOpacity onPress={() => setIsModalOpen(false)} style={styles.closeButton}>
-                <Text style={styles.closeText}>x</Text>
-              </TouchableOpacity>
-            </View>
-              <View>
-                <Text>Aktivitas</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Aktivitas"
-                  placeholderTextColor={'#BBBBBB'}
-                  value={aktivitas}
-                  onChangeText={setAktivitas}
-                />
+              <View style={styles.header}>
+                <Text>Pengisian Aktivitas</Text>
+                <TouchableOpacity onPress={() => setIsModalOpen(false)} style={styles.closeButton}>
+                  <Text style={styles.closeText}>x</Text>
+                </TouchableOpacity>
               </View>
-              <View>
-                <Text>Durasi</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Durasi"
-                  placeholderTextColor={'#BBBBBB'}
-                  value={durasi}
-                  onChangeText={setDurasi}
-                  keyboardType='numeric'
-                />
-              </View>
-              <View>
-                <Text>Kalori Terbakar</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Kalori Terbakar"
-                  placeholderTextColor={'#BBBBBB'}
-                  value={kaloriTerbakar}
-                  onChangeText={setKaloriTerbakar}
-                />
-              </View>
-            <Button onPress={handleSubmit} title="Kirim" />
+              <ScrollView contentContainerStyle={styles.scroll}>
+                <View>
+                  <Text>Aktivitas</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Aktivitas"
+                    placeholderTextColor={'#BBBBBB'}
+                    value={aktivitas}
+                    onChangeText={setAktivitas}
+                  />
+                </View>
+                <View>
+                  <Text>Durasi</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Durasi"
+                    placeholderTextColor={'#BBBBBB'}
+                    value={durasi}
+                    onChangeText={setDurasi}
+                    keyboardType='numeric'
+                  />
+                </View>
+                <View>
+                  <Text>Kalori Terbakar</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Kalori Terbakar"
+                    placeholderTextColor={'#BBBBBB'}
+                    value={kaloriTerbakar}
+                    onChangeText={setKaloriTerbakar}
+                    keyboardType='numeric'
+                  />
+                </View>
+              <Button onPress={handleSubmit} title="Kirim" />
+            </ScrollView>
           </View>
         </View> )
       }
@@ -130,6 +133,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     alignItems: 'center',
   },
+  scroll: {
+    // flex: 1,
+    // alignItems: 'center',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -161,4 +168,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Monitoring;
+export default gestureHandlerRootHOC(Monitoring);
