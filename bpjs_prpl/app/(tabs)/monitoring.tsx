@@ -33,9 +33,9 @@ const Monitoring = () => {
 
     fetchData();
   }, []);
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async () => {
     try {
-      e.preventDefault();
+      // e.preventDefault();
       const response = await fetch('http://localhost:8000/myapp/aktivitas/', {
         method: 'POST',
         headers: {
@@ -47,6 +47,7 @@ const Monitoring = () => {
           // kaloriTerbakar: kaloriTerbakar,
         }),
       });
+      console.log(response);
       const newItem = await response.json();
       if (response.ok && newItem.createdAt) {
         setItems((prevItems) => {
@@ -77,7 +78,6 @@ const Monitoring = () => {
     }
   };
 
-  console.log(items);
   return (
     <View style={styles.container}>
       <TouchableOpacity style={ styles.addStyle } onPress={() => setIsModalOpen(true)}>
@@ -94,7 +94,7 @@ const Monitoring = () => {
               </View>
               <ScrollView contentContainerStyle={styles.scroll}>
                 <View>
-                  <Text>Aktivitas</Text>
+                  <Text style={styles.textInputLabel}>Aktivitas</Text>
                   <TextInput
                     style={styles.input}
                     placeholder="Aktivitas"
@@ -104,7 +104,7 @@ const Monitoring = () => {
                   />
                 </View>
                 <View>
-                  <Text>Durasi</Text>
+                  <Text style={styles.textInputLabel}>Durasi</Text>
                   <TextInput
                     style={styles.input}
                     placeholder="Durasi"
@@ -125,7 +125,10 @@ const Monitoring = () => {
                     keyboardType='numeric'
                   />
                 </View> */}
-              <Button onPress={handleSubmit} title="Kirim" />
+              <TouchableOpacity style={styles.button} onPress={handleSubmit} >
+                <Text style={{color:'white', fontSize:20}}>Submit</Text>
+              </TouchableOpacity>
+              {/* <Button title="Submit" onPress={handleSubmit} /> */}
             </ScrollView>
           </View>
         </View> )
@@ -134,9 +137,9 @@ const Monitoring = () => {
         data={items}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-          <Text style={styles.text}>Olahraga: {item.olahraga}</Text>
+          <Text style={styles.text}>Aktivitas: {item.olahraga}</Text>
           <Text style={styles.text}>Durasi: {item.durasi}</Text>
-          <Text style={styles.text}>Kalori Terbakar: {item.kaloriTerbakar}gkal</Text>
+          {/* <Text style={styles.text}>Kalori Terbakar: {item.kaloriTerbakar}gkal</Text> */}
           <Text style={styles.text}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
           </View>
         )}
@@ -147,7 +150,7 @@ const Monitoring = () => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1, // Ensure that the container takes up the full screen
+    flex: 1, // Ensure that the container takes up the full screen
     alignItems: 'center', // Center the content horizontally
     justifyContent: 'center', // Center the content vertically
   },
@@ -181,6 +184,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  textInputLabel: {
+    fontSize: 20,
+    color: 'steelblue',
+  },
+  button: {
+    width: '100%',
+    height: 40,
+    backgroundColor: '#14B8AD',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
   },
   modal: {
     marginTop: 100,

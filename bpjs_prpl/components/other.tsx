@@ -24,12 +24,12 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   grayBox: {
-    backgroundColor: '#d3d3d3', 
-    padding: 20,                
-    marginHorizontal: 5,        
-    alignItems: 'center',       
-    justifyContent: 'center',  
-    borderRadius: 15, 
+    backgroundColor: '#d3d3d3',
+    padding: 20,
+    marginHorizontal: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
   },
 });
 
