@@ -1,4 +1,4 @@
-# Welcome to Your React Native Django App 🚀
+# Welcome to React Native Django App 🚀
 
 This project combines the power of [React Native Expo](https://expo.dev) for a seamless cross-platform mobile app experience with [Django](https://www.djangoproject.com/) as a robust and scalable backend framework.
 
