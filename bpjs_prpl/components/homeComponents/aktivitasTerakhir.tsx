@@ -33,9 +33,9 @@ const AktivitasTerakhir = () => {
             data={items}
             renderItem={({ item }) => (
                 <View>
-                    <Text style={styles.text1}>Tipe: {item.olahraga}</Text>
-                    <Text style={styles.text1}>Nama: {item.durasi}</Text>
-                    <Text style={styles.text1}>Massa/Volume: {item.kaloriTerbakar}g</Text>
+                    <Text style={styles.text1}>Olahraga: {item.olahraga}</Text>
+                    <Text style={styles.text1}>Durasi: {item.durasi}</Text>
+                    <Text style={styles.text1}>Kalori Terbakar: {item.kaloriTerbakar}gkal</Text>
                     <Text style={styles.text1}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
                 </View>
             )}
