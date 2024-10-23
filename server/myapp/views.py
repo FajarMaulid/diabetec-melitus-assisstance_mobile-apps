@@ -58,7 +58,8 @@ class LoginView(TokenObtainPairView):
 
 class AktivitasFisikListView(APIView):
     def get(self, request, *args, **kwargs):
-        data = list(aktivitasFisik.find({}, {"_id": 0}))
+        # data = list(aktivitasFisik.find({}, {"_id": 0}))
+        data = list(aktivitasFisik.find({}, {"_id": 0}).sort("createdAt", DESCENDING))
         
         serializer = AktivitasFisikSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

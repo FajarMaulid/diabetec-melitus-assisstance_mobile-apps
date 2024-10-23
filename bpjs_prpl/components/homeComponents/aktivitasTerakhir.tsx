@@ -5,8 +5,8 @@ const AktivitasTerakhir = () => {
     interface Item {
         createdAt: string | number | Date;
         olahraga: string;
-        durasi: string;
-        kaloriTerbakar: string;
+        durasi: number;
+        kaloriTerbakar: number;
         _id: string;
       }
 

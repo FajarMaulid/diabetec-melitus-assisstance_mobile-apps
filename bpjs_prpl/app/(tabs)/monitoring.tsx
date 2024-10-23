@@ -5,10 +5,10 @@ import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-nativ
 const Monitoring = () => {
   interface Item {
     _id: string;
-    category: string;
-    password: string;
-    username: string;
-    email: string;
+    olahraga: string;
+    durasi: number;
+    kaloriTerbakar: number;
+    createdAt: Date;
   }
 
   const [aktivitas, setAktivitas] = useState('');
@@ -18,28 +18,62 @@ const Monitoring = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await fetch('http://localhost:8000/myapp/');
-  //     const data = await response.json();      
-  //     setItems(data);
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch('http://localhost:8000/myapp/aktivitas/');
+      const data = await response.json();
+      data.sort((a: Item, b: Item) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      });
+      setItems(data);
+    };
 
-  //   fetchData();
-  // }, []);
-  const handleSubmit = async () => {
-    // const response = await fetch('http://localhost:8000/myapp/', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     username: 'user',
-    //     email: 'email',
-    //     category: 'category',
-    //     password: 'password',
-    //   }),
-    // });
+    fetchData();
+  }, []);
+  const handleSubmit = async (e:any) => {
+    try {
+      e.preventDefault();
+      const response = await fetch('http://localhost:8000/myapp/aktivitas/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'olahraga': aktivitas,
+          durasi: durasi,
+          // kaloriTerbakar: kaloriTerbakar,
+        }),
+      });
+      const newItem = await response.json();
+      if (response.ok && newItem.createdAt) {
+        setItems((prevItems) => {
+          const updatedItems = [...prevItems, newItem];
+          return updatedItems.sort((a: Item, b: Item) => {
+            const dateA = new Date(a.createdAt);
+            const dateB = new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
+          });
+        });
+      } else {
+        console.error('Submit failed:', newItem);
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+    } finally {
+      setAktivitas('');
+      setDurasi('');
+      // setKaloriTerbakar('');
+      setIsModalOpen(false);
+      const fetchData = async () => {
+        const response = await fetch('http://localhost:8000/myapp/aktivitas/');
+        const data = await response.json();
+        setItems(data);
+      };
+
+      fetchData();
+    }
   };
 
   console.log(items);
@@ -81,7 +115,7 @@ const Monitoring = () => {
                     keyboardType='numeric'
                   />
                 </View>
-                <View>
+                {/* <View>
                   <Text>Kalori Terbakar</Text>
                   <TextInput
                     style={styles.input}
@@ -91,7 +125,7 @@ const Monitoring = () => {
                     onChangeText={setKaloriTerbakar}
                     keyboardType='numeric'
                   />
-                </View>
+                </View> */}
               <Button onPress={handleSubmit} title="Kirim" />
             </ScrollView>
           </View>
@@ -100,13 +134,12 @@ const Monitoring = () => {
       <Text>Items:</Text>
       <FlatList
         data={items}
-        keyExtractor={(item) => item._id.toString()}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-            <Text>Username: {item.username}</Text>
-            <Text>Email: {item.email}</Text>
-            <Text>Category: {item.category}</Text>
-            <Text>Password: {item.password}</Text>
+          <Text style={styles.text}>Olahraga: {item.olahraga}</Text>
+          <Text style={styles.text}>Durasi: {item.durasi}</Text>
+          <Text style={styles.text}>Kalori Terbakar: {item.kaloriTerbakar}gkal</Text>
+          <Text style={styles.text}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
           </View>
         )}
       />
@@ -121,7 +154,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Center the content vertically
   },
   itemContainer: {
-    marginBottom: 10, // Add some space between items
+    marginBottom: 10,
+    borderRadius: 5,
+    backgroundColor: '#14B8AD',
   },
   overlay: {
     flex: 1,
@@ -132,6 +167,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     alignItems: 'center',
+    zIndex: 1,
   },
   scroll: {
     // flex: 1,
@@ -166,6 +202,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 8,
   },
+  text: {
+    fontSize: 15,
+    padding: 5,
+    color: 'white',
+  }
 });
 
 export default gestureHandlerRootHOC(Monitoring);
