@@ -1,6 +1,7 @@
 import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 const Monitoring = () => {
   interface Item {
@@ -79,10 +80,8 @@ const Monitoring = () => {
   console.log(items);
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => setIsModalOpen(true)}>
-        <Text>
-          +
-        </Text>
+      <TouchableOpacity style={ styles.addStyle } onPress={() => setIsModalOpen(true)}>
+        <MaterialCommunityIcons name="plus" size={24} color="white" />
       </TouchableOpacity>
       { isModalOpen && (
         <View style={styles.overlay}>
@@ -131,7 +130,6 @@ const Monitoring = () => {
           </View>
         </View> )
       }
-      <Text>Items:</Text>
       <FlatList
         data={items}
         renderItem={({ item }) => (
@@ -149,7 +147,7 @@ const Monitoring = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Ensure that the container takes up the full screen
+    // flex: 1, // Ensure that the container takes up the full screen
     alignItems: 'center', // Center the content horizontally
     justifyContent: 'center', // Center the content vertically
   },
@@ -157,6 +155,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
     backgroundColor: '#14B8AD',
+    width: 350,
+  },
+  addStyle: {
+    backgroundColor: '#14B8AD',
+    borderRadius: 100,
+    margin: 10,
   },
   overlay: {
     flex: 1,

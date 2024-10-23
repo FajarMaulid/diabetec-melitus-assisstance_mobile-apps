@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import React from 'react'
 import Control from '@/components/control'
-import Konsumsi from '@/components/homeComponents/konsumsi'
-import GulaDarah from '@/components/homeComponents/guladarah'
+import KonsumsiTerakhir from '@/components/homeComponents/konsumsiTerakhir'
+import GulaDarahTerakir from '@/components/homeComponents/guladarahTerakhir'
 import AktivitasTerakhir from '@/components/homeComponents/aktivitasTerakhir'
 import KontrolTerakhir from '@/components/homeComponents/controlTerakhir'
 import KontrolSelanjutnya from '@/components/homeComponents/controlSelanjutnya'
@@ -16,8 +16,8 @@ const Home = () => {
       <KontrolTerakhir />
       <KontrolSelanjutnya />
       <CuciDarahSelanjutnya />
-      <Konsumsi />
-      <GulaDarah />
+      <KonsumsiTerakhir />
+      <GulaDarahTerakir />
       <AktivitasTerakhir />
     </ScrollView>
   )

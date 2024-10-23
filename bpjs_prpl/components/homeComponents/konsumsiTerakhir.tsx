@@ -1,12 +1,13 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
-const GulaDarah = () => {
+const KonsumsiTerakhir = () => {
     interface Item {
         createdAt: string | number | Date;
-        hasilPengukuran: string;
-        petugas: string;
-        tempat: string;
+        kaloriMasuk: string;
+        massaOrVol: string;
+        nama: string;
+        tipe: string;
         _id: string;
       }
 
@@ -14,7 +15,7 @@ const GulaDarah = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-          const response = await fetch('http://localhost:8000/myapp/guladarah/terakhir');
+          const response = await fetch('http://localhost:8000/myapp/konsumsi/terakhir/');
           const data = await response.json();
           const dataArray = [data]
           setItems(dataArray);
@@ -27,25 +28,26 @@ const GulaDarah = () => {
   return (
     <View style={styles.innerContainer1}>
         <Text style={styles.text}>
-            Gula Darah Terakhir
+            Konsumsi Terakhir
         </Text>
         <FlatList
             data={items}
             renderItem={({ item }) => (
                 <View>
-                    <Text style={styles.text1}>Tipe: {item.hasilPengukuran}</Text>
-                    <Text style={styles.text1}>Nama: {item.petugas}</Text>
-                    <Text style={styles.text1}>Massa/Volume: {item.tempat}g</Text>
+                    <Text style={styles.text1}>Tipe: {item.tipe}</Text>
+                    <Text style={styles.text1}>Nama: {item.nama}</Text>
+                    <Text style={styles.text1}>Massa/Volume: {item.massaOrVol}g</Text>
+                    <Text style={styles.text1}>Kalori Masuk: {item.kaloriMasuk} kcal</Text>
                     <Text style={styles.text1}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
                 </View>
             )}
-            keyExtractor={(item) => item.hasilPengukuran}
+            keyExtractor={(item) => item.nama}
         />
     </View>
   )
 }
 
-export default GulaDarah
+export default KonsumsiTerakhir
 
 const styles = StyleSheet.create({
     innerContainer1: {

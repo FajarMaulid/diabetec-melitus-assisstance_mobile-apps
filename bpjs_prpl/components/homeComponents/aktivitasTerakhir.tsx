@@ -14,7 +14,7 @@ const AktivitasTerakhir = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-          const response = await fetch('http://localhost:8000/myapp/aktivitas/terakhir');
+          const response = await fetch('http://localhost:8000/myapp/aktivitas/terakhir/');
           const data = await response.json();
           const dataArray = [data]
           setItems(dataArray);
