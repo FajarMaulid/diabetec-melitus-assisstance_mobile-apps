@@ -100,7 +100,7 @@ class GulaDarahListView(APIView):
 
 class KonsumsiListView(APIView):
     def get(self, request, *args, **kwargs):
-        data = list(konsumsi.find({}, {"_id": 0}))
+        data = list(konsumsi.find({}, {"_id": 0}).sort("createdAt", DESCENDING))
         
         serializer = KonsumsiSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

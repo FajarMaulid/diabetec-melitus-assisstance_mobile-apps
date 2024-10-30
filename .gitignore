@@ -10,6 +10,9 @@ bpjs_prpl/*.key
 bpjs_prpl/*.mobileprovision
 bpjs_prpl/*.orig.*
 bpjs_prpl/web-build/
+bpjs_prpl/web-build-*
+bpjs_prpl/.expo-shared/
+bpjs_prpl/.env
 
 # macOS
 bpjs_prpl/.DS_Store

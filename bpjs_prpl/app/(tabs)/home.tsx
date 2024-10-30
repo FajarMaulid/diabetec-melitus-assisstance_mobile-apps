@@ -9,9 +9,9 @@ import KontrolSelanjutnya from '@/components/homeComponents/controlSelanjutnya'
 import CuciDarahSelanjutnya from '@/components/homeComponents/cuciDarahSelanjutnya'
 
 const Home = () => {
-  
+
   return (
-    <ScrollView contentContainerStyle={ styles.container }>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={{ height: 14, backgroundColor: '#00541B' }} />
       <KontrolTerakhir />
       <KontrolSelanjutnya />

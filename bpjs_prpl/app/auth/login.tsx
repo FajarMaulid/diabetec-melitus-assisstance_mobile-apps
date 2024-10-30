@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
+import { API_URL } from '@env';
 
 const Login = () => {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -19,7 +20,7 @@ const Login = () => {
     try {
       e.preventDefault();
 
-      const response = await fetch('http://localhost:8000/login/', {
+      const response = await fetch(`${API_URL}/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
+import { API_URL } from '@env'
 
 const AktivitasTerakhir = () => {
   interface Item {
@@ -11,10 +12,11 @@ const AktivitasTerakhir = () => {
   }
 
   const [items, setItems] = useState<Item[]>([]);
+  const [domain, setDomain] = useState(API_URL);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('http://localhost:8000/myapp/aktivitas/terakhir/');
+      const response = await fetch(`${domain}/myapp/aktivitas/terakhir/`);
       const data = await response.json();
       const dataArray = [data]
       setItems(dataArray);

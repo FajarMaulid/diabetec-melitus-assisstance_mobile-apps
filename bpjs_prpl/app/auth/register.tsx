@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { API_URL } from '@env';
 
 const Register = () => {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -29,7 +30,7 @@ const Register = () => {
         'password2': password2
       });
 
-      const res = await fetch('http://localhost:8000/register/', {
+      const res = await fetch(`${API_URL}/register/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
+import { API_URL } from '@env'
 
 const guladarahTerakhir = () => {
   interface Item {
@@ -11,10 +12,11 @@ const guladarahTerakhir = () => {
   }
 
   const [items, setItems] = useState<Item[]>([]);
+  //const API_URL = process.env.API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('http://localhost:8000/myapp/guladarah/terakhir/');
+      const response = await fetch(`${API_URL}/myapp/guladarah/terakhir/`);
       const data = await response.json();
       const dataArray = [data]
       setItems(dataArray);
