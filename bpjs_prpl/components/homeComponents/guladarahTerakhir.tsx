@@ -11,12 +11,14 @@ const guladarahTerakhir = () => {
     _id: string;
   }
 
+  const URL = process.env.API_URL;
   const [items, setItems] = useState<Item[]>([]);
+  const [domain, setDomain] = useState(URL);
   //const API_URL = process.env.API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`${API_URL}/myapp/guladarah/terakhir/`);
+      const response = await fetch(`${domain}/myapp/guladarah/terakhir/`);
       const data = await response.json();
       const dataArray = [data]
       setItems(dataArray);

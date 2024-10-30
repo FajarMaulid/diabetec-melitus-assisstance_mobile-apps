@@ -14,7 +14,9 @@ const Konsumsi = () => {
     createdAt: Date;
   }
 
-  const [domain, setDomain] = useState(API_URL);
+  const URL = process.env.API_URL;
+
+  const [domain, setDomain] = useState(URL);
   const [tipe, setTipe] = useState('');
   const [nama, setNama] = useState('');
   const [massaOrVol, setMassaOrVol] = useState('');

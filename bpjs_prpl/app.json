@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "bpjs_prpl",
+    "entryPoint": "app/index.tsx",
     "slug": "bpjs_prpl",
     "version": "1.0.0",
     "orientation": "portrait",

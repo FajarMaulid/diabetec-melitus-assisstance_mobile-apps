@@ -11,8 +11,9 @@ const AktivitasTerakhir = () => {
     _id: string;
   }
 
+  const URL = process.env.API_URL;
   const [items, setItems] = useState<Item[]>([]);
-  const [domain, setDomain] = useState(API_URL);
+  const [domain, setDomain] = useState(URL);
 
   useEffect(() => {
     const fetchData = async () => {

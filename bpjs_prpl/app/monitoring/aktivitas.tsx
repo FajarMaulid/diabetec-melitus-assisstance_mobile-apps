@@ -13,7 +13,9 @@ const Aktivitas = () => {
     createdAt: Date;
   }
 
-  const [domain, setDomain] = useState(API_URL);
+  const URL = process.env.API_URL;
+
+  const [domain, setDomain] = useState(URL);
   const [aktivitas, setAktivitas] = useState('');
   const [durasi, setDurasi] = useState('');
   const [kaloriTerbakar, setKaloriTerbakar] = useState('');

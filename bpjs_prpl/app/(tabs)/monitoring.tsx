@@ -18,7 +18,9 @@ const Monitoring = () => {
 
   return (
     <View>
+      <View style={{ height: 10 }} />
       <Button title="Aktivitas" onPress={handlePressAktivitas} />
+      <View style={{ height: 10 }} />
       <Button title="Konsumsi" onPress={handlePressKonsumsi} />
     </View>
   )

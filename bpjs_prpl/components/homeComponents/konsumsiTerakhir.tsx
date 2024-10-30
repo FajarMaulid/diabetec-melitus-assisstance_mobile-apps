@@ -12,11 +12,13 @@ const KonsumsiTerakhir = () => {
     _id: string;
   }
 
+  const URL = process.env.API_URL;
+  const [domain, setDomain] = useState(URL);
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`${API_URL}/myapp/konsumsi/terakhir/`);
+      const response = await fetch(`${domain}/myapp/konsumsi/terakhir/`);
       const data = await response.json();
       const dataArray = [data]
       setItems(dataArray);
