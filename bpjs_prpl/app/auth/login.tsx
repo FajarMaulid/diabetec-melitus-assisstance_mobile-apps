@@ -3,9 +3,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
-import { API_URL } from '@env';
+import URL from '../../env';
 
 const Login = () => {
+  //const URL = process.env.API_URL;
   const navigation = useNavigation<NavigationProp<any>>();
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ const Login = () => {
     try {
       e.preventDefault();
 
-      const response = await fetch(`${API_URL}/login/`, {
+      const response = await fetch(`${URL}/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,8 +55,8 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      <Text>{error}</Text>
       <Text style={styles.title}>Login</Text>
+      <Text>{error}</Text>
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -63,7 +64,7 @@ const Login = () => {
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
-          keyboardType="email-address"
+          keyboardType="default"
           autoCapitalize="none"
         />
       </View>

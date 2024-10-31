@@ -19,6 +19,7 @@ const Home = () => {
       <KonsumsiTerakhir />
       <GulaDarahTerakir />
       <AktivitasTerakhir />
+      <View style={{ height: 20 }} />
     </ScrollView>
   )
 }
