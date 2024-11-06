@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import URL from '../../env';
 
 const Aktivitas = () => {
+  console.log('Aktivitas component rendered');
   interface Item {
     _id: string;
     olahraga: string;
@@ -154,9 +155,10 @@ const Aktivitas = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Ensure that the container takes up the full screen
+    //flex: 1, // Ensure that the container takes up the full screen
     alignItems: 'center', // Center the content horizontally
     justifyContent: 'center', // Center the content vertically
+    height: '91%',
   },
   itemContainer: {
     marginBottom: 10,
@@ -176,12 +178,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    //backgroundColor: 'rgba(0, 0, 0, 0.5)',
     alignItems: 'center',
     zIndex: 1,
   },
   scroll: {
-    // flex: 1,
+     //flex: 1,
     // alignItems: 'center',
   },
   header: {
@@ -232,4 +234,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default gestureHandlerRootHOC(Aktivitas);
+export default Aktivitas;

@@ -4,30 +4,27 @@ import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-nativ
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import URL from '../../env';
 
-const Konsumsi = () => {
+const GulaDarah = () => {
   interface Item {
-    _id: string;
-    tipe: string;
-    nama: string;
-    massaOrVol: number;
-    kaloriMasuk: number;
-    createdAt: Date;
-  }
+    hasilPengukuran: number,
+    petugas: string,
+    tempat: string,
+    createdAt: Date,
+  };
 
   //const URL = process.env.API_URL;
 
   const [domain, setDomain] = useState(URL);
-  const [tipe, setTipe] = useState('');
-  const [nama, setNama] = useState('');
-  const [massaOrVol, setMassaOrVol] = useState('');
-  const [kaloriMasuk, setKaloriMasuk] = useState('');
+  const [hasilPengukuran, setHasilPengukuran] = useState('');
+  const [petugas, setPetugas] = useState('');
+  const [tempat, setTempat] = useState('');
 
   const [items, setItems] = useState<Item[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`${URL}/myapp/konsumsi/`);
+      const response = await fetch(`${URL}/myapp/guladarah/`);
       const data = await response.json();
       data.sort((a: Item, b: Item) => {
         const dateA = new Date(a.createdAt);
@@ -42,16 +39,15 @@ const Konsumsi = () => {
   const handleSubmit = async () => {
     try {
       // e.preventDefault();
-      const response = await fetch(`${URL}/myapp/konsumsi/`, {
+      const response = await fetch(`${URL}/myapp/guladarah/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          'tipe': tipe,
-          'nama': nama,
-          'massaOrVol': massaOrVol,
-          //kaloriMasuk: kaloriMasuk
+          hasilPengukuran: hasilPengukuran,
+          petugas: petugas,
+          tempat: tempat,
         }),
       });
       console.log(response);
@@ -71,13 +67,12 @@ const Konsumsi = () => {
     } catch (error) {
       console.error('Submit error:', error);
     } finally {
-      setTipe('');
-      setNama('');
-      setMassaOrVol('');
-      setKaloriMasuk('');
+      setHasilPengukuran('');
+      setPetugas('');
+      setTempat('');
       setIsModalOpen(false);
       const fetchData = async () => {
-        const response = await fetch(`${URL}/myapp/konsumsi/`);
+        const response = await fetch(`${URL}/myapp/guladarah/`);
         const data = await response.json();
         setItems(data);
       };
@@ -95,55 +90,43 @@ const Konsumsi = () => {
         <View style={styles.overlay}>
           <View style={styles.modal}>
             <View style={styles.header}>
-              <Text>Pengisian Konsumsi</Text>
+              <Text>Pengisian Gula Darah</Text>
               <TouchableOpacity onPress={() => setIsModalOpen(false)} style={styles.closeButton}>
                 <Text style={styles.closeText}>x</Text>
               </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={styles.scroll}>
               <View>
-                <Text style={styles.textInputLabel}>Tipe</Text>
+                <Text style={styles.textInputLabel}>Hasil Pengukuran</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Tipe"
+                  placeholder="Hasil Pengukuran"
                   placeholderTextColor={'#BBBBBB'}
-                  value={tipe}
-                  onChangeText={setTipe}
-                />
-              </View>
-              <View>
-                <Text style={styles.textInputLabel}>Nama</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Nama"
-                  placeholderTextColor={'#BBBBBB'}
-                  value={nama}
-                  onChangeText={setNama}
+                  value={hasilPengukuran}
+                  onChangeText={setHasilPengukuran}
                   keyboardType='numeric'
                 />
               </View>
               <View>
-                <Text style={styles.textInputLabel}>Massa Atau Volume</Text>
+                <Text style={styles.textInputLabel}>Petugas</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Massa Atau Volume"
+                  placeholder="Petugas"
                   placeholderTextColor={'#BBBBBB'}
-                  value={massaOrVol}
-                  onChangeText={setMassaOrVol}
-                  keyboardType='numeric'
+                  value={petugas}
+                  onChangeText={setPetugas}
                 />
               </View>
-              {/*}<View>
-                <Text style={styles.textInputLabel}>Kalori Masuk</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Kalori Masuk"
-                  placeholderTextColor={'#BBBBBB'}
-                  value={kaloriMasuk}
-                  onChangeText={setKaloriMasuk}
-                  keyboardType='numeric'
-                />
-              </View>*/}
+              <View>
+                  <Text>Tempat</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Tempat"
+                    placeholderTextColor={'#BBBBBB'}
+                    value={tempat}
+                    onChangeText={setTempat}
+                  />
+                </View>
               <TouchableOpacity style={styles.button} onPress={handleSubmit} >
                 <Text style={{ color: 'white', fontSize: 20 }}>Submit</Text>
               </TouchableOpacity>
@@ -156,10 +139,9 @@ const Konsumsi = () => {
         data={items}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-            <Text style={styles.text}>Tipe: {item.tipe}</Text>
-            <Text style={styles.text}>Nama: {item.nama}</Text>
-            <Text style={styles.text}>Massa: {item.massaOrVol}</Text>
-            {/*<Text style={styles.text}>Kalori: {item.kaloriMasuk}</Text>*/}
+            <Text style={styles.text}>Hasil Pengukuran: {item.hasilPengukuran}</Text>
+            <Text style={styles.text}>Petugas: {item.petugas}</Text>
+            <Text style={styles.text}>Tempat: {item.tempat}</Text>
             <Text style={styles.text}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
           </View>
         )}
@@ -173,6 +155,7 @@ const styles = StyleSheet.create({
     //flex: 1, // Ensure that the container takes up the full screen
     alignItems: 'center', // Center the content horizontally
     justifyContent: 'center', // Center the content vertically
+    height: '91%',
   },
   itemContainer: {
     marginBottom: 10,
@@ -248,4 +231,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Konsumsi;
+export default GulaDarah;

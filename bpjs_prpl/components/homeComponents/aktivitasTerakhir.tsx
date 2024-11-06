@@ -11,7 +11,7 @@ const AktivitasTerakhir = () => {
     _id: string;
   }
 
-  const URL = process.env.API_URL;
+  //const URL = process.env.API_URL;
   //console.log(URL);
   const [items, setItems] = useState<Item[]>([]);
   useEffect(() => {
