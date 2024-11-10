@@ -1,6 +1,7 @@
+from email import message
 from django.shortcuts import render
 from django.http import HttpResponse
-from db_connection import user_collection, aktivitasFisik, gulaDarah, konsumsi
+from db_connection import user_collection, aktivitasFisik, gulaDarah, konsumsi, messages
 from rest_framework import generics
 from .serializer import UserSerializer, AktivitasFisikSerializer, GulaDarahSerializer, KonsumsiSerializer
 from django.http import JsonResponse
@@ -15,8 +16,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import authenticate
 from datetime import datetime
 from pymongo import DESCENDING
-
-
+from django.contrib.auth.hashers import check_password, make_password
+from bson import ObjectId
 
 def index(request):
     # users = user_collection.find()
@@ -43,23 +44,25 @@ class LoginView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         email = request.data.get("email")
         password = request.data.get("password")
-
-        user = user_collection.find_one({'email': email, 'password': password})
-        user['id'] = str(user['_id'])
+        
+        user = user_collection.find_one({'email': email})
+        # user['id'] = str(user['_id'])
         # user = authenticate(username=email, password=password)
 
         if user is not None:
-            refresh = RefreshToken
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            })
-        return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            if check_password(password, user['password']):
+                refresh = RefreshToken
+                return Response({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                })
+            return Response({"detail": "Invalid password"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"detail": "User not found"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class AktivitasFisikListView(APIView):
     def get(self, request, *args, **kwargs):
         # data = list(aktivitasFisik.find({}, {"_id": 0}))
-        data = list(aktivitasFisik.find({}, {"_id": 0}).sort("createdAt", DESCENDING))
+        data = list(aktivitasFisik.find({}, {"_id": 0}, sort=[("createdAt", DESCENDING)]))
         
         serializer = AktivitasFisikSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -79,7 +82,7 @@ class AktivitasFisikListView(APIView):
     
 class GulaDarahListView(APIView):
     def get(self, request, *args, **kwargs):
-        data = list(gulaDarah.find({}, {"_id": 0}))
+        data = list(gulaDarah.find({}, {"_id": 0}, sort=[("createdAt", DESCENDING)]))
         
         serializer = GulaDarahSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -100,7 +103,7 @@ class GulaDarahListView(APIView):
 
 class KonsumsiListView(APIView):
     def get(self, request, *args, **kwargs):
-        data = list(konsumsi.find({}, {"_id": 0}).sort("createdAt", DESCENDING))
+        data = list(konsumsi.find({}, {"_id": 0}, sort=[("createdAt", DESCENDING)]))
         
         serializer = KonsumsiSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -145,3 +148,42 @@ class LatestKonsumsiData(APIView):
             serializer = KonsumsiSerializer(konsumsiTerakhir)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({"message": "No data found"}, status=status.HTTP_404_NOT_FOUND)
+
+class Message(APIView):
+    def get(self, request, *args, **kwargs):
+        pipeline = [
+            {
+                "$unwind": "$message"  # Unwind array 'message' menjadi dokumen individual
+            },
+            {
+                "$sort": { "message.createdAt": DESCENDING }  # Sorting berdasarkan 'createdAt' dalam 'message'
+            },
+            {
+                "$group": {
+                    "_id": "$_id",  # Mengelompokkan berdasarkan _id utama
+                    "message": { "$push": "$message" }  # Memasukkan kembali pesan-pesan ke dalam array 'messages'
+                }
+            }
+        ]
+        data = list(messages.aggregate(pipeline))
+        # data = list(messages.find({}, sort=[("message.createdAt", DESCENDING)]))
+        print(data)
+        for i in data:
+            i['_id'] = str(i['_id'])
+        return Response(data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        new_message = {
+            "_id": str(ObjectId()),
+            "text": request.data['text'],
+            "user": {
+                "_id": request.data['user']['_id'],
+            },
+            "createdAt": datetime.now()
+        }
+        messages.update_one(
+            {"_id":ObjectId("6730acef204bbc66d5969e5c")},
+            {"$push": {"message": new_message}}
+        )
+
+        return Response({"message": "Message sent successfully!"}, status=status.HTTP_201_CREATED)

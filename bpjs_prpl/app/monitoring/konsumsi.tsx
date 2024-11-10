@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
     //flex: 1, // Ensure that the container takes up the full screen
     alignItems: 'center', // Center the content horizontally
     justifyContent: 'center', // Center the content vertically
+    height: '91%',
   },
   itemContainer: {
     marginBottom: 10,

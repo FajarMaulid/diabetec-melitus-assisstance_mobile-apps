@@ -43,7 +43,7 @@ const Login = () => {
         router.push('../(tabs)/home');
       } else {
         console.error('Login failed:', data.detail);
-        setError('Login failed');
+        setError(data.detail);
       }
     } catch (error: any) {
       console.error('Login error:', error);
