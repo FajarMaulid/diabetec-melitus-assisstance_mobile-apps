@@ -12,4 +12,5 @@ urlpatterns = [
     path('guladarah/', views.GulaDarahListView.as_view(), name='guladarah-list'),
     path('guladarah/terakhir/', views.LatestGulaDarahData.as_view(), name='guladarah-terakhir'),
     path('messages/', views.Message.as_view(), name='message'),
+    path('chat/', views.ChatBot.as_view(), name='chat'),
 ]

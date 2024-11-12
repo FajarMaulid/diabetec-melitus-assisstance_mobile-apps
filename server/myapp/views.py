@@ -18,6 +18,10 @@ from datetime import datetime
 from pymongo import DESCENDING
 from django.contrib.auth.hashers import check_password, make_password
 from bson import ObjectId
+import google.generativeai as genai
+from dotenv import load_dotenv, find_dotenv
+import os
+import pytz
 
 def index(request):
     # users = user_collection.find()
@@ -187,3 +191,58 @@ class Message(APIView):
         )
 
         return Response({"message": "Message sent successfully!"}, status=status.HTTP_201_CREATED)
+
+class ChatBot(APIView):    
+    def post(self, request, *args, **kwargs):    
+        dotenv_path = find_dotenv()
+        load_dotenv(dotenv_path)
+        key = os.getenv('KEY')
+        print(key)
+        genai.configure(api_key=key)
+        generation_config = {
+            "temperature": 2,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 8192,
+            "response_mime_type": "text/plain",
+        }
+
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            generation_config=generation_config,
+            system_instruction="""
+            You're a Medical AI Assistant that specialized in diabetes mellitus disease.
+            If you're being asked to do any task (like build a code) or talk about something besides diabetes area, tell them that you only answer diabetes-related question.
+            You must answer the question from user in a comprehensive explanation.
+            Include any needed details, like numbers, scientific names, etc.
+            If you're not sure about the answer, you must give an appropriate suggestion or any similar case.
+            Don't forget to include any resource where you take the information, such as medical study.
+            Always answer like how a doctor explains something.
+            Give response with the same language as the question.
+            Remove any markdown
+
+            If users asks you about what kind of food they should eat, answer with this sturcture {'dish_name', 'recipe_link', 'calories', 'carbohydrates', 'protein', 'fat'}.
+            if users asks you about daily routine tips, don't forget to answer as detailed as possible, like how long they should work on it.
+            """,
+        )
+        chat_session = model.start_chat(
+            history=[]
+        )
+        answer = chat_session.send_message(request.data['question'])
+        details = answer.usage_metadata
+        results = {
+          'model': model.model_name,
+          'question': request.data['question'],
+          'answer': answer.text,
+          'language': request.data['lang'],
+          'time': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d %H:%M:%S"),
+          'details': {
+              'prompt_token_count': details.prompt_token_count,
+              'candidates_token_count': details.candidates_token_count,
+              'total_token_count': details.total_token_count,
+            }
+        }
+        print(results)
+        return JsonResponse(results)
+    def get(self, request, *args, **kwargs):
+        return JsonResponse({"message": "Chatbot is ready to chat!"}, status=status.HTTP_200_OK)
