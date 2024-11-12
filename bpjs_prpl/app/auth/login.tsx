@@ -3,10 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
-import URL from '../../env';
 
 const Login = () => {
-  //const URL = process.env.API_URL;
+  const URL = process.env.EXPO_PUBLIC_API_URL;
   const navigation = useNavigation<NavigationProp<any>>();
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');

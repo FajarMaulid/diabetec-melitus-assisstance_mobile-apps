@@ -1,6 +1,5 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import URL from '../../env'
 
 const guladarahTerakhir = () => {
   interface Item {
@@ -11,7 +10,7 @@ const guladarahTerakhir = () => {
     _id: string;
   }
 
-  //const URL = process.env.API_URL;
+  const URL = process.env.EXPO_PUBLIC_API_URL;
   const [items, setItems] = useState<Item[]>([]);
   const [domain, setDomain] = useState(URL);
 

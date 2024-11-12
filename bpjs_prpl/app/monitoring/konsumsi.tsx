@@ -2,7 +2,6 @@ import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-nativ
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import URL from '../../env';
 
 const Konsumsi = () => {
   interface Item {
@@ -14,7 +13,7 @@ const Konsumsi = () => {
     createdAt: Date;
   }
 
-  //const URL = process.env.API_URL;
+  const URL = process.env.EXPO_PUBLIC_API_URL;
 
   const [domain, setDomain] = useState(URL);
   const [tipe, setTipe] = useState('');

@@ -1,6 +1,5 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import URL from '../../env'
 
 const AktivitasTerakhir = () => {
   interface Item {
@@ -11,8 +10,7 @@ const AktivitasTerakhir = () => {
     _id: string;
   }
 
-  //const URL = process.env.API_URL;
-  //console.log(URL);
+  const URL = process.env.EXPO_PUBLIC_API_URL
   const [items, setItems] = useState<Item[]>([]);
   useEffect(() => {
     const fetchData = async () => {

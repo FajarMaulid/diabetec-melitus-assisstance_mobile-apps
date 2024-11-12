@@ -1,12 +1,10 @@
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import axios from 'axios';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import URL from '../../env';
 
 const Register = () => {
-  //const URL = process.env.API_URL;
+  const URL = process.env.EXPO_PUBLIC_API_URL;
   const navigation = useNavigation<NavigationProp<any>>();
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');

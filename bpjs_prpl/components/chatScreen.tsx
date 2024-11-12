@@ -2,11 +2,12 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import { Avatar, GiftedChat, Bubble, Send, IMessage } from 'react-native-gifted-chat';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import URL from '../env'
 import generateObjectId from '../ObjectID';
 
 const ChatScreen = () => {
   type Message = IMessage;
+
+  const URL = process.env.EXPO_PUBLIC_API_URL
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatbotResponse, setChatbotResponse] = useState<string>('');
