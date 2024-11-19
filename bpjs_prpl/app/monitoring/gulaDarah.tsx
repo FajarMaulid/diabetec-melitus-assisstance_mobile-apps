@@ -117,7 +117,7 @@ const GulaDarah = () => {
                 />
               </View>
               <View>
-                  <Text>Tempat</Text>
+                  <Text style={ styles.textInputLabel }>Tempat</Text>
                   <TextInput
                     style={styles.input}
                     placeholder="Tempat"

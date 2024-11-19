@@ -13,7 +13,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth.forms import AuthenticationForm
 from datetime import datetime
 from pymongo import DESCENDING
 from django.contrib.auth.hashers import check_password, make_password
@@ -23,13 +24,7 @@ from dotenv import load_dotenv, find_dotenv
 import os
 import pytz
 
-def index(request):
-    # users = user_collection.find()
-    # users = list(user_collection.find())  
-    # for user in users:
-    #     user['_id'] = str(user['_id']) 
-
-    # return JsonResponse(users, safe=False)
+def index():
     return HttpResponse("Hello World")
 
 class UserCreate(generics.CreateAPIView):
@@ -50,16 +45,22 @@ class LoginView(TokenObtainPairView):
         password = request.data.get("password")
         
         user = user_collection.find_one({'email': email})
-        # user['id'] = str(user['_id'])
-        # user = authenticate(username=email, password=password)
-
+        # print(user['_id'])
         if user is not None:
             if check_password(password, user['password']):
-                refresh = RefreshToken
+                user1 = User.objects.get(email=user['email'])
+                refresh = RefreshToken.for_user(user1)
+                refresh['user_id'] = str(user['_id'])
+                request.session['user_id'] = str(user['_id'])
+                # request.session.modified = True
+                request.session.save()
                 return Response({
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
+                    'user_id': str(user['_id']),
                 })
+                response.set_cookie('user_id', str(user.id), max_age=60*60*24*7, httponly=True)
+
             return Response({"detail": "Invalid password"}, status=status.HTTP_401_UNAUTHORIZED)
         return Response({"detail": "User not found"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -67,7 +68,6 @@ class AktivitasFisikListView(APIView):
     def get(self, request, *args, **kwargs):
         # data = list(aktivitasFisik.find({}, {"_id": 0}))
         data = list(aktivitasFisik.find({}, {"_id": 0}, sort=[("createdAt", DESCENDING)]))
-        
         serializer = AktivitasFisikSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -108,7 +108,6 @@ class GulaDarahListView(APIView):
 class KonsumsiListView(APIView):
     def get(self, request, *args, **kwargs):
         data = list(konsumsi.find({}, {"_id": 0}, sort=[("createdAt", DESCENDING)]))
-        
         serializer = KonsumsiSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -143,7 +142,7 @@ class LatestGulaDarahData(APIView):
             serializer = GulaDarahSerializer(gulaDarahTerakhir)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({"message": "No data found"}, status=status.HTTP_404_NOT_FOUND)
-    
+
 class LatestKonsumsiData(APIView):
     def get(self, request, *args, **kwargs):
         konsumsiTerakhir = konsumsi.find_one({}, sort=[("createdAt", DESCENDING)])
@@ -197,7 +196,6 @@ class ChatBot(APIView):
         dotenv_path = find_dotenv()
         load_dotenv(dotenv_path)
         key = os.getenv('KEY')
-        print(key)
         genai.configure(api_key=key)
         generation_config = {
             "temperature": 2,
@@ -242,7 +240,6 @@ class ChatBot(APIView):
               'total_token_count': details.total_token_count,
             }
         }
-        print(results)
         return JsonResponse(results)
     def get(self, request, *args, **kwargs):
         return JsonResponse({"message": "Chatbot is ready to chat!"}, status=status.HTTP_200_OK)

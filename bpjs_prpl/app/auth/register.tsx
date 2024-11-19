@@ -18,6 +18,11 @@ const Register = () => {
     setError('');
     if (password !== password2) {
       setError('Password mismatch!');
+      return;
+    }
+    if (email === '' || password.length < 8 || username === '') {
+      setError('Input is to short!');
+      return;
     }
     setLoading(true);
     e.preventDefault();
@@ -55,8 +60,12 @@ const Register = () => {
 
     } catch (error: any) {
       console.error('Login error:', error);
-      if (error.response.data.non_field_errors) {
-        setError(error.response.data.non_field_errors[0]);
+      //if (error.response.data.non_field_errors) {
+      //  setError(error.response.data.non_field_errors[0]);
+      //  setError('Login failed');
+      //}
+      if (error) {
+        setError(error.detail);
       }
     } finally {
       setLoading(false);

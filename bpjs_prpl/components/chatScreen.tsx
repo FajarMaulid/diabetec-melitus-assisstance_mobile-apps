@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { Avatar, GiftedChat, Bubble, Send, IMessage } from 'react-native-gifted-chat';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import generateObjectId from '../ObjectID';
+import Markdown from 'react-native-markdown-display';
 
 const ChatScreen = () => {
   type Message = IMessage;
@@ -20,7 +21,7 @@ const ChatScreen = () => {
 
         if (data && data[0] && data[0].message) {
           const messagesFromApi = data[0].message.map((item: any) => ({
-            _id: item._id, 
+            _id: item._id,
             text: item.text,
             createdAt: new Date(item.createdAt),
             user: {
@@ -32,13 +33,13 @@ const ChatScreen = () => {
 
           //console.log("Formatted messages:", messagesFromApi); 
 
-          setMessages(messagesFromApi); 
+          setMessages(messagesFromApi);
         } else {
           console.error("Data format error: 'message' not found");
         }
       })
       .catch((error) => console.error('Error fetching data:', error));
-  }, []); 
+  }, []);
 
   const onSend = useCallback((newMessages: Message[] = []) => {
     setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
@@ -59,7 +60,7 @@ const ChatScreen = () => {
       .then((response) => response.json())
       .then((data) => console.log('Success:', data))
       .catch((error) => console.error('Error:', error));
-    
+
     //fetch('https://8a17-34-16-127-67.ngrok-free.app/chat/', {
     fetch(`${URL}/myapp/chat/`, {
       method: 'POST',
@@ -72,7 +73,7 @@ const ChatScreen = () => {
       }),
     })
       .then((response) => response.json())
-      .then((data:any) => {
+      .then((data: any) => {
         console.log('Chatbot response:', data);
         fetch(`${URL}/myapp/messages/`, {
           method: 'POST',
@@ -90,7 +91,7 @@ const ChatScreen = () => {
           .catch((error) => console.log('Error:', error));
         setMessages((previousMessages) => GiftedChat.append(previousMessages, [{
           //_id: Math.random().toString(36).substring(2,20) + Date.now().toString(12),
-          _id: generateObjectId(), 
+          _id: generateObjectId(),
           text: data.answer,
           createdAt: new Date(),
           user: {
@@ -98,13 +99,16 @@ const ChatScreen = () => {
             name: 'bot',
             avatar: '../assets/images/august.jpg',
           },
-      }]))})
+        }]))
+      })
       .catch((error) => {
         console.error('Error getting chatbot response:', error);
       });
   }, []);
-  
+
   const renderBubble = (props: any) => {
+    const { currentMessage } = props;
+    const isFromCurrentUser = currentMessage.user._id === 1;
     return (
       <Bubble
         {...props}
@@ -114,10 +118,41 @@ const ChatScreen = () => {
             textAlign: 'right',
           },
           left: {
-            width: '90%',
+            width: '95%',
             backgroundColor: '#f0f0f0',
             textAlign: 'center',
           },
+        }}
+        renderMessageText={(messageProps) => {
+          if (!isFromCurrentUser) {
+            return (
+              <Text style={{ marginLeft: 20, marginRight: 20, marginTop: 0 }}>
+                <Markdown style={{
+                  body: {
+                    color: '#333333',
+                    fontSize: 14,
+                  },
+                  heading1: {
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                  },
+                  em: {
+                    fontStyle: 'italic',
+                  },
+                  link: {
+                    color: '#1e90ff',
+                  },
+                }}>
+                  {messageProps.currentMessage.text}
+                </Markdown>
+              </Text>
+            );
+          }
+          return (
+            <Text style={{ color:'white', marginLeft:20, marginRight:20, marginTop:10 }}>
+              {messageProps.currentMessage.text}
+            </Text>
+          );
         }}
       />
     );
