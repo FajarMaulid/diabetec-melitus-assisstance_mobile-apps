@@ -8,8 +8,8 @@ const Login = () => {
   const URL = process.env.EXPO_PUBLIC_API_URL;
   const navigation = useNavigation<NavigationProp<any>>();
   const [error, setError] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('asal@gmail.com');
+  const [password, setPassword] = useState('asalasal');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: any) => {

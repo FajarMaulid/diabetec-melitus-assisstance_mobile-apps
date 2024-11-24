@@ -1,9 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Avatar, GiftedChat, Bubble, Send, IMessage } from 'react-native-gifted-chat';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import generateObjectId from '../ObjectID';
 import Markdown from 'react-native-markdown-display';
+import { Platform } from 'react-native';
 
 const ChatScreen = () => {
   type Message = IMessage;
@@ -27,7 +28,7 @@ const ChatScreen = () => {
             user: {
               _id: item.user._id,
               //name: item.user.name || 'Unknown',
-              avatar: item.user.avatar || '../assets/images/august.jpg',
+              //avatar: item.user.avatar || '../assets/images/august.jpg',
             },
           }));
 
@@ -107,54 +108,60 @@ const ChatScreen = () => {
   }, []);
 
   const renderBubble = (props: any) => {
-    const { currentMessage } = props;
+    let { currentMessage } = props;
     const isFromCurrentUser = currentMessage.user._id === 1;
     return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            backgroundColor: '#14B8AD',
-            textAlign: 'right',
-          },
-          left: {
-            width: '95%',
-            backgroundColor: '#f0f0f0',
-            textAlign: 'center',
-          },
-        }}
-        renderMessageText={(messageProps) => {
-          if (!isFromCurrentUser) {
+      <View style={{ marginRight: 10 }}>
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            flex: 1,
+            flexWrap: 'wrap',
+            right: {
+              backgroundColor: '#14B8AD',
+              textAlign: 'right',
+            },
+            left: {
+              maxWidth: '95%',
+              margin: 10,
+              backgroundColor: '#f0f0f0',
+              textAlign: 'center',
+            },
+          }}
+          renderMessageText={(messageProps) => {
+            if (!isFromCurrentUser) {
+              return (
+                <View style={{ marginLeft: 20, marginRight: 10, marginTop: 0 }}>
+                  <Markdown style={{
+                    body: {
+                      color: '#333333',
+                      fontSize: 14,
+                      maxWidth: '100%',
+                    },
+                    heading1: {
+                      fontSize: 24,
+                      fontWeight: 'bold',
+                    },
+                    em: {
+                      fontStyle: 'italic',
+                    },
+                    link: {
+                      color: '#1e90ff',
+                    },
+                  }}>
+                    {messageProps.currentMessage.text}
+                  </Markdown>
+                </View>
+              );
+            }
             return (
-              <Text style={{ marginLeft: 20, marginRight: 20, marginTop: 0 }}>
-                <Markdown style={{
-                  body: {
-                    color: '#333333',
-                    fontSize: 14,
-                  },
-                  heading1: {
-                    fontSize: 24,
-                    fontWeight: 'bold',
-                  },
-                  em: {
-                    fontStyle: 'italic',
-                  },
-                  link: {
-                    color: '#1e90ff',
-                  },
-                }}>
-                  {messageProps.currentMessage.text}
-                </Markdown>
+              <Text style={{ color: 'white', marginLeft: 20, marginRight: 20, marginTop: 10 }}>
+                {messageProps.currentMessage.text}
               </Text>
             );
-          }
-          return (
-            <Text style={{ color:'white', marginLeft:20, marginRight:20, marginTop:10 }}>
-              {messageProps.currentMessage.text}
-            </Text>
-          );
-        }}
-      />
+          }}
+        />
+      </View>
     );
   }
 
@@ -191,3 +198,13 @@ const ChatScreen = () => {
 }
 
 export default ChatScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    start: 0,
+    top: 0,
+    marginRight: 50,
+  },
+});

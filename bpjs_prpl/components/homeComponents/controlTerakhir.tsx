@@ -1,14 +1,36 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 const KontrolTerakhir = () => {
+  const [items, setItems] = useState('');
+  const URL = process.env.EXPO_PUBLIC_API_URL;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(`${URL}/myapp/guladarah/terakhir/`);
+      const data = await response.json();
+      const dataArray = [data]
+      setItems(data);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <View style={styles.innerContainer1}>
       <Text style={styles.text}>
         Kontrol Terakhir
       </Text>
       <Text style={styles.text1}>
-        12 oktober 2024
+        { items.createdAt !== undefined && items.charCodeAt !== '' ?
+          new Date(items.createdAt).toLocaleString('id-ID', {
+            day: 'numeric',
+            month: 'long',  // Menggunakan nama bulan
+            year: 'numeric'
+          }) : '' }
+      </Text>
+      <Text style={styles.text1}>
+        {items.hasilPengukuran}
       </Text>
     </View>
   )

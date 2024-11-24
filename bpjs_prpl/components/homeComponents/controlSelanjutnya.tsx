@@ -8,7 +8,7 @@ const KontrolSelanjutnya = () => {
         Kontrol Selanjutnya
       </Text>
       <Text style={styles.text1}>
-        2 hari lagi, Dr. ucup bin marucup
+        Belum ditentukan 
       </Text>
     </View>
   )

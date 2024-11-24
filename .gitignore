@@ -28,3 +28,6 @@ bpjs_prpl/env.tsx
 myenv
 >>>>>>> origin/front
 **/__pycache__/
+
+simple_backend/.env
+simple_backend/node_modules/
