@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Modal, TextInput, Button } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Modal, TextInput, Button, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 const Profile = () => {
   const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -17,27 +18,29 @@ const Profile = () => {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
+      base64: true,
     });
 
-    console.log(result);
+    //console.log(result);
 
     //if (!result.cancelled) {
-    setImage(result.uri);
+    setImage(result.assets[0].base64);
     //}
   };
 
   const takeImage = async () => {
     // Ambil gambar dengan kamera
     let result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true, // Opsional: memungkinkan pengeditan gambar
-      aspect: [4, 3], // Opsional: rasio aspek untuk gambar
-      quality: 1,  // Opsional: kualitas gambar
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      base64: true,
     });
 
     //if (!result.canceled) {
     // Gambar berhasil diambil, tampilkan atau lakukan sesuatu dengan hasilnya
-    console.log(result);
-    setImage(result.assets[0].uri); // Menyimpan URI gambar (opsional)
+    //console.log(result);
+    setImage(result.assets[0].base64); // Menyimpan URI gambar (opsional)
     //}
   };
 
@@ -91,11 +94,12 @@ const Profile = () => {
 
     fetchData();
   }, []);
+  //console.log(image);
 
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: image }} // Ganti dengan URL gambar profilmu
+        source={{ uri: image == null? `data:image/png;base64,${items.image}` : `data:image/png;base64,${image}`}} // Ganti dengan URL gambar profilmu
         style={styles.profileImage}
       />
 
@@ -110,7 +114,7 @@ const Profile = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleEditProfile}>
-          <View style={styles.editButton}>
+          <View style={styles.pictureButton}>
             <Text style={styles.buttonText}>Edit Profile</Text>
           </View>
         </TouchableOpacity>
@@ -128,56 +132,70 @@ const Profile = () => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Edit Profile</Text>
-
-            <TextInput
-              style={styles.input}
-              label="Username"
-              placeholder="Username"
-              value={newUsername}
-              onChangeText={setNewUsername}
-            />
-            <TextInput
-              style={styles.input}
-              label="Nama"
-              placeholder="Nama"
-              value={newName}
-              onChangeText={setNewName}
-            />
-
-            <View>
-
-              <TouchableOpacity style={styles.saveButton} onPress={pickImage}>
-                <Text style={styles.buttonText}>Choose Profile Picture</Text>
-              </TouchableOpacity>
-
-              {/* TouchableOpacity untuk mengambil gambar menggunakan kamera */}
-              <TouchableOpacity style={styles.saveButton} onPress={takeImage}>
-                <Text style={styles.buttonText}>Take a picture</Text>
-              </TouchableOpacity>
-
-              <View style={{ marginVertical: 10 }} />
-              {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
-            </View>
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity onPress={handleSaveChanges}>
-                <View style={styles.saveButton}>
-                  <Text style={styles.buttonText}>Save Changes</Text>
-                </View>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <View style={styles.cancelButton}>
-                  <Text style={styles.buttonText}>Cancel</Text>
-                </View>
+        <View style={styles.overlay}>
+          <View style={styles.modal}>
+            <View style={styles.header}>
+              <Text style={styles.modalTitle}>Edit Profile</Text>
+              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+                <Text style={styles.closeText}>x</Text>
               </TouchableOpacity>
             </View>
+
+            <ScrollView contentContainerStyle={styles.scroll}>
+              <View>
+                <Text style={styles.textInputLabel}>Username</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Username"
+                  value={newUsername}
+                  onChangeText={setNewUsername}
+                />
+              </View>
+
+              <View>
+                <Text style={styles.textInputLabel}>Nama</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nama"
+                  value={newName}
+                  onChangeText={setNewName}
+                />
+              </View>
+
+              <View>
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity style={styles.pictureButton} onPress={pickImage}>
+                    <Text style={styles.buttonText}><MaterialCommunityIcons size={24} name="image" /></Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.pictureButton} onPress={takeImage}>
+                    <Text style={styles.buttonText}><MaterialCommunityIcons size={24} name="camera" /></Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={{ marginVertical: 10, alignItems:'center' }}>
+                {image && <Image source={{ uri: `data:image/png;base64,${image}` }} style={{ width: 200, height: 200, alignItems:'center' }} />}
+                </View>
+              </View>
+
+              {/*<View style={styles.modalButtons}>*/}
+                <TouchableOpacity onPress={handleSaveChanges}>
+                  <View style={styles.pictureButton}>
+                    <Text style={styles.buttonText}>Save Changes</Text>
+                  </View>
+                </TouchableOpacity>
+
+                {/*<TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <View style={styles.cancelButton}>
+                    <Text style={styles.buttonText}>Cancel</Text>
+                  </View>
+                </TouchableOpacity>*/}
+              {/*</View>*/}
+            </ScrollView>
           </View>
         </View>
       </Modal>
+
     </View>
   );
 };
@@ -232,6 +250,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   button: {
+    paddingHorizontal: 5,
     width: '100%',
     height: 40,
     backgroundColor: '#ff0000',
@@ -285,7 +304,8 @@ const styles = StyleSheet.create({
   },
   modalButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    //justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     width: '100%',
   },
   saveButton: {
@@ -297,6 +317,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   cancelButton: {
+    padding : 10,
     //width: '48%',
     backgroundColor: '#f44336',
     alignItems: 'center',
@@ -304,7 +325,59 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 10,
   },
+  closeButton: {
+    marginBottom: 2,
+  },
+  closeText: {
+    fontSize: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  overlay: {
+    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  scroll: {
+    //flex: 1,
+    // alignItems: 'center',
+  },
+  textInputLabel: {
+    fontSize: 20,
+    color: 'steelblue',
+  },
+  modal: {
+    marginTop: 100,
+    width: '90%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    elevation: 5,
+    position: 'relative',
+  },
+  text: {
+    fontSize: 15,
+    padding: 5,
+    color: 'white',
+  },
+  pictureButton: {
+    alignItems: 'center',
+    backgroundColor: '#14B8AD',
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 3,
+  },
 });
 
 export default Profile;
+
 

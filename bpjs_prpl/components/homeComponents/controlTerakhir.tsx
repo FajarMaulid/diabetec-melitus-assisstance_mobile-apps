@@ -30,7 +30,7 @@ const KontrolTerakhir = () => {
           }) : '' }
       </Text>
       <Text style={styles.text1}>
-        {items.hasilPengukuran}
+        Hasil: <Text style={{ fontWeight:'800' }}>{items.hasilPengukuran}</Text>
       </Text>
     </View>
   )

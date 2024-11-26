@@ -91,14 +91,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#14B8AD',
-    borderRadius: 100,
+    borderRadius: 15,
     margin: 10,
     padding: 10,
   },
   buttonPressed: {
     backgroundColor: '#ffffff',
     borderColor: '#14B8AD',
-    borderRadius: 100,
+    borderRadius: 15,
     borderWidth: 2,
     margin: 10,
     padding: 10,

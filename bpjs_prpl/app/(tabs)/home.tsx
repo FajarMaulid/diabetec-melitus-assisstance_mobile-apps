@@ -23,14 +23,22 @@ const Home = () => {
     fetchData();
   }, []);
   
-  console.log(items);
+  //console.log(items);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {items.length === 0 || items.detail == 'Not authenticated'? 
-        <Text style={styles.loginText}>Silahkan Login terkebih dahulu</Text> 
-        : 
-        <Text style={styles.welcomeText}>Wellcome, {items.name || items.username}</Text>}
+      {items.length === 0 || items.detail == 'Not authenticated'?
+        <View style={{backgroundColor:'red', width:"100%", borderBottomRightRadius:20, borderBottomLeftRadius:20, height:70}}>
+          <Text style={styles.loginText}>Silahkan Login terkebih dahulu</Text> 
+        </View>
+        :
+        <View style={{backgroundColor:'#14B8AD', width:"100%", borderBottomRightRadius:20, borderBottomLeftRadius:20, height:70, justifyContent:'center'}}>
+          <Text style={styles.welcomeText}>Wellcome, {items.name || items.username}</Text>
+        </View>
+      }
+      <Text style={styles.dasboardText}>
+        Dashboard
+      </Text>
       <View style={{ height: 14, backgroundColor: '#00541B' }} />
       <KontrolTerakhir />
       {/*<KontrolSelanjutnya />*/}
@@ -52,15 +60,22 @@ const styles = StyleSheet.create({
   },
   loginText: {
     fontSize: 18,
-    color: '#FF6347', // Tomat (warna merah terang)
+    color: '#FFFFFF', // Tomat (warna merah terang)
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 10,
   },
   welcomeText: {
     fontSize: 22,
-    color: '#4CAF50', // Hijau terang
+    color: '#FFFFFF', // Hijau terang
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  dasboardText: {
+    fontSize: 22,
+    color: '#14B8AD', // Hijau terang
+    fontWeight: '900',
     textAlign: 'center',
     marginVertical: 10,
   },

@@ -8,7 +8,7 @@ const { ObjectId } = require("mongodb");
 const getSessionUserId = (memoryStore) => {
   // Get the first session key
   const sessionKey = Object.keys(memoryStore.sessions)[0];
-  console.log("Session key:", sessionKey);
+  //console.log("Session key:", sessionKey);
   if (!sessionKey) {
     return null;
   }
@@ -16,7 +16,7 @@ const getSessionUserId = (memoryStore) => {
   try {
     // Parse the session string into an object
     const sessionData = JSON.parse(memoryStore.sessions[sessionKey]);
-    console.log("Session data:", sessionData);
+    //console.log("Session data:", sessionData);
     return sessionData.userId;
   } catch (error) {
     console.error("Error parsing session data:", error);
@@ -49,7 +49,7 @@ router.get("/messages", async (req, res) => {
     // Perform aggregation
     const data = await chatCollection.aggregate(pipeline).toArray();
     // Log the result for debugging
-    console.log(data);
+    //console.log(data);
 
     res.json(data);
   } catch (error) {
@@ -71,7 +71,7 @@ router.post("/messages", async (req, res) => {
   const asal = await chatCollection.findOne({
     userId: getSessionUserId(req.sessionStore),
   });
-  console.log(asal);
+  //console.log(asal);
 
   if (!asal) {
     await chatCollection.insertOne({
@@ -114,10 +114,10 @@ router.post("/chat", async (req, res) => {
     if users asks you about daily routine tips, don't forget to answer as detailed as possible, like how long they should work on it.
     `,
   });
-  console.log(req.body);
+  //console.log(req.body);
   const ChatSession = model.startChat((history = []));
   const answer = await ChatSession.sendMessage(req.body.question);
-  console.log(answer.response.candidates[0].content.parts[0].text);
+  //console.log(answer.response.candidates[0].content.parts[0].text);
   res.json({ answer: answer.response.candidates[0].content.parts[0].text });
 });
 

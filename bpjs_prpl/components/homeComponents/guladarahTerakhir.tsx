@@ -35,9 +35,9 @@ const guladarahTerakhir = () => {
         data={items}
         renderItem={({ item }) => (
           <View>
-            <Text style={styles.text1}>Tipe: {item.hasilPengukuran}</Text>
+            <Text style={styles.text1}>Hasil: {item.hasilPengukuran}</Text>
             <Text style={styles.text1}>Nama: {item.petugas}</Text>
-            <Text style={styles.text1}>Massa/Volume: {item.tempat}g</Text>
+            <Text style={styles.text1}>Tempat: {item.tempat}</Text>
             <Text style={styles.text1}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
           </View>
         )}

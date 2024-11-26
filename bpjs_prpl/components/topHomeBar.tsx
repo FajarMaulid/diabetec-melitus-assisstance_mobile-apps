@@ -4,7 +4,7 @@ import MiniProfile from './miniProfile'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 
-const TopHomeBar = () => {
+const TopHomeBar = () => {    
   // const navigation = useNavigation();
 
   // const handleProfilePress = () => {
@@ -13,7 +13,7 @@ const TopHomeBar = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.bpjsText}>BPJS</Text>
-      <Text style={styles.healthCareText}>Health Care</Text>
+      <Text style={styles.healthCareText}>MeDiAH</Text>
       <View style={styles.profileContainer}>
         {/* <TouchableOpacity onPress={handleProfilePress}> */}
           {/* <MiniProfile /> */}
@@ -34,13 +34,13 @@ const styles = StyleSheet.create({
   },
   bpjsText: {
     fontSize: 24,
-    color: '#00852A',
-    fontWeight: 'bold',
+    color: '#14B8AD',
+    fontWeight: '900',
   },
   healthCareText: {
     marginTop: 9,
     fontSize: 16,
-    color: '#161EFF',
+    color: '#00852A',
   },
   profileContainer: {
     flexDirection: 'row',
