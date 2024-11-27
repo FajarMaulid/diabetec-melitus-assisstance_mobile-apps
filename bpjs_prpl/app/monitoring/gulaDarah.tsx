@@ -61,10 +61,10 @@ const GulaDarah = () => {
           });
         });
       } else {
-        console.error('Submit failed:', newItem);
+        console.log('Submit failed:', newItem);
       }
     } catch (error) {
-      console.error('Submit error:', error);
+      console.log('Submit error:', error);
     } finally {
       setHasilPengukuran('');
       setPetugas('');
@@ -79,6 +79,39 @@ const GulaDarah = () => {
       fetchData();
     }
   };
+
+  const getBloodSugarStatus = (result: string) => {
+    const value = parseFloat(result);
+    if (isNaN(value)) return { status: 'Tidak Diketahui', color: '#FFA500' };
+
+    if (value < 70) return { status: 'Rendah', color: '#FF6B6B' };
+    if (value >= 70 && value <= 99) return { status: 'Normal', color: '#4CAF50' };
+    if (value >= 100 && value <= 125) return { status: 'Prediabetes', color: '#FFC107' };
+    return { status: 'Diabetes', color: '#FF5722' };
+  };
+
+  const processedItems = items.map(item => {
+    const { status, color } = getBloodSugarStatus(item.hasilPengukuran);
+    return {
+      ...item,
+      status,
+      color,
+    };
+  });
+
+  const renderBloodSugarItem = ({ item }) => (
+    <View style={styles.itemContainer}>
+      <View style={{ flexDirection:'row', justifyContent:'space-evenly' }}>
+        <Text style={styles.hasilText}>Hasil Pengukuran: {item.hasilPengukuran}</Text>
+        <View style={{ backgroundColor: item.color, width: '30%', borderRadius: 20, alignItems: 'center', marginTop:5 }}>
+          <Text style={[styles.text]}>{item.status}</Text>
+        </View>
+      </View>
+      <Text style={styles.text}>Petugas: {item.petugas}</Text>
+      <Text style={styles.text}>Tempat: {item.tempat}</Text>
+      <Text style={styles.text}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -117,15 +150,15 @@ const GulaDarah = () => {
                 />
               </View>
               <View>
-                  <Text style={ styles.textInputLabel }>Tempat</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Tempat"
-                    placeholderTextColor={'#BBBBBB'}
-                    value={tempat}
-                    onChangeText={setTempat}
-                  />
-                </View>
+                <Text style={styles.textInputLabel}>Tempat</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Tempat"
+                  placeholderTextColor={'#BBBBBB'}
+                  value={tempat}
+                  onChangeText={setTempat}
+                />
+              </View>
               <TouchableOpacity style={styles.button} onPress={handleSubmit} >
                 <Text style={{ color: 'white', fontSize: 20 }}>Submit</Text>
               </TouchableOpacity>
@@ -135,15 +168,13 @@ const GulaDarah = () => {
         </View>)
       }
       <FlatList
-        data={items}
-        renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Text style={styles.text}>Hasil Pengukuran: {item.hasilPengukuran}</Text>
-            <Text style={styles.text}>Petugas: {item.petugas}</Text>
-            <Text style={styles.text}>Tempat: {item.tempat}</Text>
-            <Text style={styles.text}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
+        data={processedItems} // Menggunakan data yang sudah diproses
+        renderItem={renderBloodSugarItem} // Menggunakan renderItem untuk menampilkan setiap item
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Tidak ada data gula darah</Text>
           </View>
-        )}
+        }
       />
     </View>
   );
@@ -158,7 +189,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     marginBottom: 10,
-    borderRadius: 5,
+    borderRadius: 15,
     backgroundColor: '#14B8AD',
     width: 350,
   },
@@ -227,7 +258,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     padding: 5,
     color: 'white',
-  }
+  },
+  hasilText: {
+    fontSize: 20,
+    padding: 5,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  emptyContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#888',
+  },
 });
 
 export default GulaDarah;

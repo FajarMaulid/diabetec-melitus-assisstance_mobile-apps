@@ -2,6 +2,7 @@ import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-nativ
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { FontAwesome5 } from '@expo/vector-icons'
 
 const Aktivitas = () => {
   interface Item {
@@ -36,6 +37,46 @@ const Aktivitas = () => {
 
     fetchData();
   }, []);
+
+  const getSportIcon = (sport: string) => {
+    const sportIcons: {[key: string]: string} = {
+      'Lari': 'running',
+      'Sepeda': 'bicycle',
+      'Bersepeda': 'bicycle',
+      'Renang': 'swimmer',
+      'Berenang': 'swimmer',
+      'Yoga': 'dumbbell',
+      'Push Up': 'walking'
+    };
+    return sportIcons[sport] || 'walking';
+  };
+
+  const renderActivityItem = ({ item }: { item: Item }) => (
+    <TouchableOpacity style={styles.activityCard}>
+      <View style={styles.iconContainer}>
+        <FontAwesome5 
+          name={getSportIcon(item.olahraga)} 
+          size={30} 
+          color="white" 
+        />
+      </View>
+      <View style={styles.activityDetails}>
+        <Text style={styles.sportName}>{item.olahraga}</Text>
+          <Text style={styles.detailText}>Durasi: {item.durasi} menit</Text>
+          <Text style={styles.detailText}>Kalori: {item.kaloriTerbakar} kkal</Text>
+        <Text style={styles.dateText}>
+          {new Date(item.createdAt).toLocaleString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   const handleSubmit = async () => {
     try {
       // e.preventDefault();
@@ -138,14 +179,13 @@ const Aktivitas = () => {
       }
       <FlatList
         data={items}
-        renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Text style={styles.text}>Aktivitas: {item.olahraga}</Text>
-            <Text style={styles.text}>Durasi: {item.durasi}</Text>
-            {/* <Text style={styles.text}>Kalori Terbakar: {item.kaloriTerbakar}gkal</Text> */}
-            <Text style={styles.text}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
+        renderItem={renderActivityItem}
+        keyExtractor={(item) => item._id}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Tidak ada aktivitas terakhir</Text>
           </View>
-        )}
+        }
       />
     </View>
   );
@@ -229,7 +269,55 @@ const styles = StyleSheet.create({
     fontSize: 15,
     padding: 5,
     color: 'white',
-  }
+  },
+  activityCard: {
+    width: 350,
+    flexDirection: 'row',
+    backgroundColor: '#14B8AD',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  iconContainer: {
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  activityDetails: {
+    //flex: 1,
+  },
+  sportName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 5,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  detailText: {
+    fontSize: 14,
+    color: 'white',
+  },
+  dateText: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.7)',
+  },
+  emptyContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#888',
+  },
 });
 
 export default Aktivitas;

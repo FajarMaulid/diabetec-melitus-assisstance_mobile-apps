@@ -32,7 +32,7 @@ const Home = () => {
           <Text style={styles.loginText}>Silahkan Login terkebih dahulu</Text> 
         </View>
         :
-        <View style={{backgroundColor:'#14B8AD', width:"100%", borderBottomRightRadius:20, borderBottomLeftRadius:20, height:70, justifyContent:'center'}}>
+        <View style={{backgroundColor:'green', width:"100%", borderBottomRightRadius:20, borderBottomLeftRadius:20, height:70, justifyContent:'center'}}>
           <Text style={styles.welcomeText}>Wellcome, {items.name || items.username}</Text>
         </View>
       }

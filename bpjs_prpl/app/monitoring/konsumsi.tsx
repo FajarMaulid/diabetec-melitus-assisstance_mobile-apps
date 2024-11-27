@@ -38,6 +38,55 @@ const Konsumsi = () => {
 
     fetchData();
   }, []);
+
+  const getFoodTypeDetails = (type: string) => {
+    const foodTypeIcons: {[key: string]: {icon: string, color: string}} = {
+      'Makanan': { icon: 'food', color: '#4CAF50' },
+      'Minuman': { icon: 'cup', color: '#2196F3' },
+      'Snack': { icon: 'food-apple', color: '#FF9800' },
+      'Buah': { icon: 'fruit-watermelon', color: '#E91E63' },
+      'Sayur': { icon: 'leaf', color: '#8BC34A' }
+    };
+    return foodTypeIcons[type] || { icon: 'food-variant', color: '#9C27B0' };
+  };
+
+  const renderKonsumsiItem = ({ item }: { item: Item }) => {
+    const { icon, color } = getFoodTypeDetails(item.tipe);
+
+    return (
+      <TouchableOpacity style={styles.konsumsiCard}>
+        <View style={[styles.iconContainer, { backgroundColor: `${color}50` }]}>
+          <MaterialCommunityIcons name={icon} size={30} color={color} />
+        </View>
+        <View style={styles.konsumsiDetails}>
+          <View style={styles.headerRow}>
+            <Text style={styles.namaText}>{item.nama}</Text>
+            <View style={[styles.tipeBadge, { backgroundColor: color }]}>
+              <Text style={styles.tipeText}>{item.tipe}</Text>
+            </View>
+          </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailText}>
+              Massa/Volume: {item.massaOrVol}g
+            </Text>
+            <Text style={styles.kaloriText}>
+              {item.kaloriMasuk} kcal
+            </Text>
+          </View>
+          <Text style={styles.dateText}>
+            {new Date(item.createdAt).toLocaleString('id-ID', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   const handleSubmit = async () => {
     try {
       // e.preventDefault();
@@ -153,15 +202,13 @@ const Konsumsi = () => {
       }
       <FlatList
         data={items}
-        renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Text style={styles.text}>Tipe: {item.tipe}</Text>
-            <Text style={styles.text}>Nama: {item.nama}</Text>
-            <Text style={styles.text}>Massa: {item.massaOrVol}</Text>
-            {/*<Text style={styles.text}>Kalori: {item.kaloriMasuk}</Text>*/}
-            <Text style={styles.text}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
+        renderItem={renderKonsumsiItem}
+        keyExtractor={(item) => item._id}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Tidak ada data konsumsi</Text>
           </View>
-        )}
+        }
       />
     </View>
   );
@@ -245,7 +292,84 @@ const styles = StyleSheet.create({
     fontSize: 15,
     padding: 5,
     color: 'white',
-  }
+  },
+  konsumsiCard: {
+    width: 350,
+    flexDirection: 'row',
+    backgroundColor: '#14B8AD',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  iconContainer: {
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  konsumsiDetails: {
+    //flex: 1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  namaText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    flex: 1,
+    marginRight: 10,
+  },
+  tipeBadge: {
+    borderRadius: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  tipeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  detailText: {
+    fontSize: 14,
+    color: 'white',
+  },
+  kaloriText: {
+    fontSize: 14,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  dateText: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyText: {
+    color: 'white',
+    fontSize: 16,
+  },
 });
 
 export default Konsumsi;
