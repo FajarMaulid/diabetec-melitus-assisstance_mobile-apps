@@ -57,7 +57,7 @@ const Login = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-      {error === null ? <Text style={styles.error}>{error}</Text> : null}
+      {error !== null ? <Text style={styles.error}>{error}</Text> : null}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'yellow',
     width: '80%',
     textAlign: 'center',
+    fontWeight: 'bold',
   },
 })
 

@@ -49,13 +49,17 @@ const GulaDarah = () => {
       };
     }
 
-    const labels = items.map(item =>
-      new Date(item.createdAt).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-      })
-    );
-    const data = items.map(item => parseFloat(item.hasilPengukuran));
+    const labels = items
+      .map(item =>
+        new Date(item.createdAt).toLocaleDateString('id-ID', {
+          day: '2-digit',
+          month: '2-digit',
+        })
+      ).reverse(); // Membalik urutan labels
+
+    const data = items
+      .map(item => parseFloat(item.hasilPengukuran))
+      .reverse(); // Membalik urutan data
 
     return {
       labels: labels.slice(-5), // Hanya gunakan 5 data terbaru

@@ -18,11 +18,11 @@ const Register = () => {
   const handleRegister = async (e: any) => {
     setError('');
     if (password !== password2) {
-      setError('Password mismatch!');
+      setError('Password tidak sama!');
       return;
     }
     if (email === '' || password.length < 8 || username === '') {
-      setError('Input is to short!');
+      setError('Input terlalu pendek!');
       return;
     }
     setLoading(true);
@@ -76,8 +76,7 @@ const Register = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register</Text>
-      <Text>{error}</Text>
-
+      {error !== null ? <Text style={styles.error}>{error}</Text> : null}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Username</Text>
         <TextInput
@@ -198,6 +197,13 @@ const styles = StyleSheet.create({
   buttonGroupLeftContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  error: {
+    color: 'red',
+    backgroundColor: 'yellow',
+    width: '80%',
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 })
 

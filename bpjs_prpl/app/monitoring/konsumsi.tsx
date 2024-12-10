@@ -2,6 +2,8 @@ import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-nativ
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { LineChart } from 'react-native-chart-kit';
+import { Dimensions } from 'react-native';
 
 const Konsumsi = () => {
   interface Item {
@@ -38,6 +40,41 @@ const Konsumsi = () => {
 
     fetchData();
   }, []);
+
+  const screenWidth = Dimensions.get('window').width;
+
+  const processDataForChart = () => {
+    if (!items || items.length === 0) {
+      // Jika items tidak ada atau kosong, kembalikan data default
+      return {
+        labels: ['No Data'],
+        datasets: [{ data: [0] }],
+      };
+    }
+
+    const labels = items
+      .map(item =>
+        new Date(item.createdAt).toLocaleDateString('id-ID', {
+          day: '2-digit',
+          month: '2-digit',
+        })
+      ).reverse(); // Membalik urutan labels
+
+    const data = items
+      .map(item => parseFloat(item.kaloriMasuk) || 0)
+      .reverse(); // Membalik urutan data
+
+    return {
+      labels: labels.slice(-5), // Hanya gunakan 5 data terbaru
+      datasets: [
+        {
+          data: data.slice(-5), // Data untuk 5 pengukuran terakhir
+          strokeWidth: 2, // Ketebalan garis
+          color: () => `rgba(20, 184, 173, 1)`, // Warna garis
+        },
+      ],
+    };
+  };
 
   const getFoodTypeDetails = (type: string) => {
     const foodTypeIcons: {[key: string]: {icon: string, color: string}} = {
@@ -98,8 +135,8 @@ const Konsumsi = () => {
         body: JSON.stringify({
           'tipe': tipe,
           'nama': nama,
-          'massaOrVol': massaOrVol,
-          //kaloriMasuk: kaloriMasuk
+          'massaOrVol': parseInt(massaOrVol) || '',
+          'kaloriMasuk': kaloriMasuk
         }),
       });
       console.log(response);
@@ -136,6 +173,27 @@ const Konsumsi = () => {
 
   return (
     <View style={styles.container}>
+      <LineChart
+        data={processDataForChart()}
+        width={screenWidth - 20} // Lebar grafik (dengan margin)
+        height={220} // Tinggi grafik
+        chartConfig={{
+          //backgroundColor: '#e26a00',
+          backgroundGradientFrom: '#14B8AD',
+          //backgroundGradientTo: '#00d4ff',
+          decimalPlaces: 1, // Angka desimal
+          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          style: { borderRadius: 0 },
+          propsForDots: {
+            r: '6',
+            //strokeWidth: '2',
+            stroke: '#14B8AD',
+          },
+        }}
+        bezier
+        style={{ marginVertical: 0, borderRadius: 8 }}
+      />
       <TouchableOpacity style={styles.addStyle} onPress={() => setIsModalOpen(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="white" />
       </TouchableOpacity>
@@ -181,7 +239,7 @@ const Konsumsi = () => {
                   keyboardType='numeric'
                 />
               </View>
-              {/*}<View>
+              <View>
                 <Text style={styles.textInputLabel}>Kalori Masuk</Text>
                 <TextInput
                   style={styles.input}
@@ -191,7 +249,7 @@ const Konsumsi = () => {
                   onChangeText={setKaloriMasuk}
                   keyboardType='numeric'
                 />
-              </View>*/}
+              </View>
               <TouchableOpacity style={styles.button} onPress={handleSubmit} >
                 <Text style={{ color: 'white', fontSize: 20 }}>Submit</Text>
               </TouchableOpacity>
