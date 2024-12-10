@@ -39,7 +39,7 @@ const Profile = () => {
 
     //if (!result.canceled) {
     // Gambar berhasil diambil, tampilkan atau lakukan sesuatu dengan hasilnya
-    //console.log(result);
+    //console.log(result.assets[0].base64);
     setImage(result.assets[0].base64); // Menyimpan URI gambar (opsional)
     //}
   };
@@ -67,7 +67,7 @@ const Profile = () => {
         body: JSON.stringify({
           username: newUsername,
           name: newName,
-          image: image
+          image: image,
         }),
       }).then((res) => {
         if (res.ok) {

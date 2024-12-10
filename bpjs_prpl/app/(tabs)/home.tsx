@@ -19,12 +19,10 @@ const Home = () => {
       const dataArray = [data];
       setItems(data);
     };
-
     fetchData();
   }, []);
   
   //console.log(items);
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {items.length === 0 || items.detail == 'Not authenticated'?

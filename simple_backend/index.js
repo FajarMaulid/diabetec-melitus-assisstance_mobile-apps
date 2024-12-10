@@ -1,12 +1,21 @@
 const express = require('express');
 const session = require('express-session');
 const store = new session.MemoryStore();
+const cors = require('cors');
 require('dotenv').config();
 
 //const config = require('./config/config.ts');
 const app = express();
+
+const corsOptions = {
+  origin: process.env.EXPO,  // Ganti dengan URL aplikasi React Native Expo Anda
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,  // Izinkan pengiriman cookie dan sesi
+};
+app.use(cors(corsOptions));
+
 require('dotenv').config();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 // Mengimpor rute
 
 app.use(session({

@@ -12,7 +12,8 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
 
   const handleRegister = async (e: any) => {
     setError('');
@@ -113,6 +114,16 @@ const Register = () => {
           onChangeText={setPassword}
           secureTextEntry
         />
+        <TouchableOpacity
+          //style={styles.toggleButton}
+          onPress={() => setShowPassword(!showPassword)}  // Toggle the password visibility
+        >
+          <Text 
+            //style={styles.toggleButtonText}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.inputGroup}>
@@ -124,6 +135,16 @@ const Register = () => {
           onChangeText={setPassword2}
           secureTextEntry
         />
+        <TouchableOpacity
+          //style={styles.toggleButton}
+          onPress={() => setShowPassword2(!showPassword2)}  // Toggle the password visibility
+        >
+          <Text 
+            //style={styles.toggleButtonText}
+          >
+            {showPassword2 ? 'Hide' : 'Show'}
+          </Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.buttonGroup}>
         <View style={styles.buttonGroupLeftContainer}>

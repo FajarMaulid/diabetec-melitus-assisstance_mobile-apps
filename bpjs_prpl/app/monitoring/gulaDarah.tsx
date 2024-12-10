@@ -2,6 +2,8 @@ import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-nativ
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { LineChart } from 'react-native-chart-kit';
+import { Dimensions } from 'react-native';
 
 const GulaDarah = () => {
   interface Item {
@@ -35,6 +37,38 @@ const GulaDarah = () => {
 
     fetchData();
   }, []);
+
+  const screenWidth = Dimensions.get('window').width;
+
+  const processDataForChart = () => {
+    if (!items || items.length === 0) {
+      // Jika items tidak ada atau kosong, kembalikan data default
+      return {
+        labels: ['No Data'],
+        datasets: [{ data: [0] }],
+      };
+    }
+
+    const labels = items.map(item =>
+      new Date(item.createdAt).toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+      })
+    );
+    const data = items.map(item => parseFloat(item.hasilPengukuran));
+
+    return {
+      labels: labels.slice(-5), // Hanya gunakan 5 data terbaru
+      datasets: [
+        {
+          data: data.slice(-5), // Data untuk 5 pengukuran terakhir
+          strokeWidth: 2, // Ketebalan garis
+          color: () => `rgba(20, 184, 173, 1)`, // Warna garis
+        },
+      ],
+    };
+  };
+
   const handleSubmit = async () => {
     try {
       // e.preventDefault();
@@ -101,9 +135,9 @@ const GulaDarah = () => {
 
   const renderBloodSugarItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <View style={{ flexDirection:'row', justifyContent:'space-evenly' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
         <Text style={styles.hasilText}>Hasil Pengukuran: {item.hasilPengukuran}</Text>
-        <View style={{ backgroundColor: item.color, width: '30%', borderRadius: 20, alignItems: 'center', marginTop:5 }}>
+        <View style={{ backgroundColor: item.color, width: '30%', borderRadius: 20, alignItems: 'center', marginTop: 5 }}>
           <Text style={[styles.text]}>{item.status}</Text>
         </View>
       </View>
@@ -115,6 +149,27 @@ const GulaDarah = () => {
 
   return (
     <View style={styles.container}>
+      <LineChart
+        data={processDataForChart()}
+        width={screenWidth - 20} // Lebar grafik (dengan margin)
+        height={220} // Tinggi grafik
+        chartConfig={{
+          //backgroundColor: '#e26a00',
+          backgroundGradientFrom: '#14B8AD',
+          //backgroundGradientTo: '#00d4ff',
+          decimalPlaces: 1, // Angka desimal
+          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          style: { borderRadius: 0 },
+          propsForDots: {
+            r: '6',
+            //strokeWidth: '2',
+            stroke: '#14B8AD',
+          },
+        }}
+        bezier
+        style={{ marginVertical: 0, borderRadius: 8 }}
+      />
       <TouchableOpacity style={styles.addStyle} onPress={() => setIsModalOpen(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="white" />
       </TouchableOpacity>
@@ -168,6 +223,7 @@ const GulaDarah = () => {
         </View>)
       }
       <FlatList
+
         data={processedItems} // Menggunakan data yang sudah diproses
         renderItem={renderBloodSugarItem} // Menggunakan renderItem untuk menampilkan setiap item
         ListEmptyComponent={
@@ -185,7 +241,8 @@ const styles = StyleSheet.create({
     //flex: 1, // Ensure that the container takes up the full screen
     alignItems: 'center', // Center the content horizontally
     justifyContent: 'center', // Center the content vertically
-    height: '91%',
+    height: '92%',
+    top: '3%',
   },
   itemContainer: {
     marginBottom: 10,

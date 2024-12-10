@@ -11,8 +11,10 @@ const Login = () => {
   const [email, setEmail] = useState('asal@gmail.com');
   const [password, setPassword] = useState('asalasal');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e: any) => {
+    console.log('login');
     if (email === '' || password === '') {
       return;
     }
@@ -55,7 +57,7 @@ const Login = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-      <Text style={styles.error}>{error}</Text>
+      {error === null ? <Text style={styles.error}>{error}</Text> : null}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -69,13 +71,27 @@ const Login = () => {
       </View>
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+        <View 
+          //style={styles.inputWrapper}
+        >
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity
+            //style={styles.toggleButton}
+            onPress={() => setShowPassword(!showPassword)}  // Toggle the password visibility
+          >
+            <Text 
+              //style={styles.toggleButtonText}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.buttonGroup}>
         <View style={styles.buttonGroupLeftContainer}>
