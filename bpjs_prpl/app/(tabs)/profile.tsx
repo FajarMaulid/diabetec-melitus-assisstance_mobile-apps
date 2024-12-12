@@ -1,8 +1,10 @@
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Modal, TextInput, Button, ScrollView } from 'react-native';
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Confirm from '@/components/confirm';
 
 const Profile = () => {
   const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -12,6 +14,7 @@ const Profile = () => {
   const [newEmail, setNewEmail] = useState('');
   const [newName, setNewName] = useState('');
   const [image, setImage] = useState(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -73,6 +76,14 @@ const Profile = () => {
         if (res.ok) {
           console.log('Profile updated successfully!');
           window.location.reload();
+          useEffect(() => {
+            const fetchData = async () => {
+              const response = await fetch(`${API_URL}/profile/`);
+              const data = await response.json();
+              setItems(data);
+            };
+            fetchData();
+          }, []);
         } else {
           console.error('Failed to update profile:', res.message);
         }
@@ -96,20 +107,24 @@ const Profile = () => {
   }, []);
   //console.log(image);
 
+  const closeOpen = () => {
+    setIsConfirmOpen(isConfirmOpen => !isConfirmOpen);
+  }
+
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: image == null? `data:image/png;base64,${items.image}` : `data:image/png;base64,${image}`}} // Ganti dengan URL gambar profilmu
+        source={{ uri: image == null ? `data:image/png;base64,${items.image}` : `data:image/png;base64,${image}` }} // Ganti dengan URL gambar profilmu
         style={styles.profileImage}
       />
 
       <Text style={styles.username}>{items.name || items.username}</Text>
 
-      <Text style={styles.bio}>Software Developer, Tech Enthusiast, Traveler</Text>
+      {/*<Text style={styles.bio}>Software Developer, Tech Enthusiast, Traveler</Text>*/}
 
       <View style={styles.contactContainer}>
         <Text style={styles.contactText}>Email: {items.email}</Text>
-        <Text style={styles.contactText}>Phone: +1 234 567 890</Text>
+        {/*<Text style={styles.contactText}>Phone: +1 234 567 890</Text>*/}
       </View>
 
       <View style={styles.buttonContainer}>
@@ -119,7 +134,7 @@ const Profile = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleLogOut}>
+        <TouchableOpacity onPress={() => setIsConfirmOpen(true)}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>Log Out</Text>
           </View>
@@ -127,6 +142,7 @@ const Profile = () => {
       </View>
 
       {/* Modal for editing profile */}
+      {isConfirmOpen && (<Confirm text='Apakah Anda ingin Log Out dari aplikasi?' after={handleLogOut} url={`${API_URL}/logout/`} id='' closeOpen={closeOpen} />)}
       <Modal
         transparent={true}
         visible={modalVisible}
@@ -173,19 +189,19 @@ const Profile = () => {
                   </TouchableOpacity>
                 </View>
 
-                <View style={{ marginVertical: 10, alignItems:'center' }}>
-                {image && <Image source={{ uri: `data:image/png;base64,${image}` }} style={{ width: 200, height: 200, alignItems:'center' }} />}
+                <View style={{ marginVertical: 10, alignItems: 'center' }}>
+                  {image && <Image source={{ uri: `data:image/png;base64,${image}` }} style={{ width: 200, height: 200, alignItems: 'center' }} />}
                 </View>
               </View>
 
               {/*<View style={styles.modalButtons}>*/}
-                <TouchableOpacity onPress={handleSaveChanges}>
-                  <View style={styles.pictureButton}>
-                    <Text style={styles.buttonText}>Save Changes</Text>
-                  </View>
-                </TouchableOpacity>
+              <TouchableOpacity onPress={handleSaveChanges}>
+                <View style={styles.pictureButton}>
+                  <Text style={styles.buttonText}>Save Changes</Text>
+                </View>
+              </TouchableOpacity>
 
-                {/*<TouchableOpacity onPress={() => setModalVisible(false)}>
+              {/*<TouchableOpacity onPress={() => setModalVisible(false)}>
                   <View style={styles.cancelButton}>
                     <Text style={styles.buttonText}>Cancel</Text>
                   </View>
@@ -317,7 +333,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   cancelButton: {
-    padding : 10,
+    padding: 10,
     //width: '48%',
     backgroundColor: '#f44336',
     alignItems: 'center',
@@ -378,6 +394,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+export default gestureHandlerRootHOC(Profile);
 
 

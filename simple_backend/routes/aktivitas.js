@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { getAktivitasCollection } = require('../config/db');
+require("dotenv").config();
+const { GoogleGenerativeAI, ChatSession } = require("@google/generative-ai");
+const { ObjectId } = require('mongodb');
 
 const getSessionUserId = (memoryStore) => {
   // Get the first session key
   const sessionKey = Object.keys(memoryStore.sessions)[0];
-  console.log("Session key:", sessionKey);
+  //console.log("Session key:", sessionKey);
   if (!sessionKey) {
     return null;
   }
@@ -13,7 +16,7 @@ const getSessionUserId = (memoryStore) => {
   try {
     // Parse the session string into an object
     const sessionData = JSON.parse(memoryStore.sessions[sessionKey]);
-    console.log("Session data:", sessionData);
+    //console.log("Session data:", sessionData);
     return sessionData.userId;
   } catch (error) {
     console.error("Error parsing session data:", error);
@@ -34,6 +37,31 @@ router.get('/terakhir', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
+  const kalori = req.body.kaloriTerbakar;
+  console.log(kalori == "");
+  if (kalori == "") {
+    const genAI = new GoogleGenerativeAI(process.env.CHAT_KEY);
+    const generationConfig = {
+      temperature: 2,
+      topP: 0.95,
+      topK: 40,
+      maxOutputTokens: 5,
+      responseMimeType: "text/plain",
+    };
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: generationConfig,
+      systemInstruction: `
+        Berapa kalori yang terbakar pada ${req.body.olahraga} dengan durasi selama ${req.body.durasi} menit, berikan angkanya saja tanpa perlu memberikan penjelasan yang lain, cukup dengan memberikan nilai kalori tanpa perlu penjelasan yang lain dan jangan berikan range
+      `,
+    });
+    //console.log(req.body);
+    const question = "Berapa kalori terbakar pada " + req.body.olahraga + " dengan durasi selama " + req.body.durasi + "menit , berikan angkanya saja tanpa perlu memberikan penjelasan yang lain, cukup dengan memberikan nilai kalori tanpa perlu penjelasan yang lain dan jangan berikan range";
+    const ChatSession = model.startChat((history = []));
+    const answer = await ChatSession.sendMessage(question);
+    console.log(answer.response.candidates[0].content.parts[0].text);
+    req.body.kaloriTerbakar = parseInt(answer.response.candidates[0].content.parts[0].text);
+  }
   const newDocument = {
     ...req.body,          // Spread the existing body
     userId: getSessionUserId(req.sessionStore), // Add userId with the current user
@@ -45,4 +73,12 @@ router.post('/', async (req, res) => {
   res.json(result);
 });
 
+router.post("/delete/", async (req, res) => {
+  const aktivitasCollection = await getAktivitasCollection();
+  const result = await aktivitasCollection.deleteOne({
+    _id: new ObjectId(req.body.id),
+  });
+  console.log('delete');
+  res.json(result);
+})
 module.exports = router;

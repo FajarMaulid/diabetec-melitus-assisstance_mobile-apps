@@ -2,8 +2,8 @@ import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-nativ
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { LineChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
+import Confirm from '@/components/confirm';
+import Chart from '@/components/chart';
 
 const GulaDarah = () => {
   interface Item {
@@ -19,9 +19,11 @@ const GulaDarah = () => {
   const [hasilPengukuran, setHasilPengukuran] = useState('');
   const [petugas, setPetugas] = useState('');
   const [tempat, setTempat] = useState('');
-
   const [items, setItems] = useState<Item[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState('');
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [idDelete, setIdDelete] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,42 +40,11 @@ const GulaDarah = () => {
     fetchData();
   }, []);
 
-  const screenWidth = Dimensions.get('window').width;
-
-  const processDataForChart = () => {
-    if (!items || items.length === 0) {
-      // Jika items tidak ada atau kosong, kembalikan data default
-      return {
-        labels: ['No Data'],
-        datasets: [{ data: [0] }],
-      };
-    }
-
-    const labels = items
-      .map(item =>
-        new Date(item.createdAt).toLocaleDateString('id-ID', {
-          day: '2-digit',
-          month: '2-digit',
-        })
-      ).reverse(); // Membalik urutan labels
-
-    const data = items
-      .map(item => parseFloat(item.hasilPengukuran))
-      .reverse(); // Membalik urutan data
-
-    return {
-      labels: labels.slice(-5), // Hanya gunakan 5 data terbaru
-      datasets: [
-        {
-          data: data.slice(-5), // Data untuk 5 pengukuran terakhir
-          strokeWidth: 2, // Ketebalan garis
-          color: () => `rgba(20, 184, 173, 1)`, // Warna garis
-        },
-      ],
-    };
-  };
-
   const handleSubmit = async () => {
+    if (!hasilPengukuran || !petugas || !tempat) {
+      setError('Semua field harus diisi');
+      return;
+    };
     try {
       // e.preventDefault();
       const response = await fetch(`${URL}/myapp/guladarah/`, {
@@ -118,6 +89,11 @@ const GulaDarah = () => {
     }
   };
 
+  const deleteItem = (id: string) => {
+    setIsConfirmOpen(true);
+    setIdDelete(id);
+  }
+
   const getBloodSugarStatus = (result: string) => {
     const value = parseFloat(result);
     if (isNaN(value)) return { status: 'Tidak Diketahui', color: '#FFA500' };
@@ -139,44 +115,59 @@ const GulaDarah = () => {
 
   const renderBloodSugarItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={styles.hasilText}>Hasil Pengukuran: {item.hasilPengukuran}</Text>
-        <View style={{ backgroundColor: item.color, width: '30%', borderRadius: 20, alignItems: 'center', marginTop: 5 }}>
-          <Text style={[styles.text]}>{item.status}</Text>
+        <View style={{ backgroundColor: item.color, width: '30%', borderRadius: 20, alignItems: 'center', marginTop: 10, marginRight: 10, justifyContent: 'center' }}>
+          <Text style={[styles.statusText]}>{item.status}</Text>
         </View>
       </View>
-      <Text style={styles.text}>Petugas: {item.petugas}</Text>
-      <Text style={styles.text}>Tempat: {item.tempat}</Text>
-      <Text style={styles.text}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
+      <View style={{ marginBottom: 10, flexDirection: 'column', justifyContent:'center' }}>
+        <View>
+          <Text style={styles.text}>Petugas: {item.petugas}</Text>
+          <Text style={styles.text}>Tempat: {item.tempat}</Text>
+          <Text style={styles.text}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
+        </View>
+        <View style={{ justifyContent:'flex-end', alignSelf:'flex-end' }}>
+          <TouchableOpacity onPress={() => deleteItem(item._id)}>
+            <MaterialCommunityIcons name="delete" size={24} color="red" />
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 
+  const chartData = items.map(item => parseFloat(item.hasilPengukuran) || 0).reverse();
+  const chartLabels = items.map(item => new Date(item.createdAt).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: '2-digit',
+  })).reverse();
+
+  const closeOpen = () => {
+    setIsConfirmOpen(isConfirmOpen => !isConfirmOpen);
+  }
+
+  const afterDelete = () => {
+    const fetchData = async () => {
+      const response = await fetch(`${URL}/myapp/guladarah/`);
+      const data = await response.json();
+      setItems(data);
+    };
+    fetchData();
+  }
+
   return (
     <View style={styles.container}>
-      <LineChart
-        data={processDataForChart()}
-        width={screenWidth - 20} // Lebar grafik (dengan margin)
-        height={220} // Tinggi grafik
-        chartConfig={{
-          //backgroundColor: '#e26a00',
-          backgroundGradientFrom: '#14B8AD',
-          //backgroundGradientTo: '#00d4ff',
-          decimalPlaces: 1, // Angka desimal
-          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          style: { borderRadius: 0 },
-          propsForDots: {
-            r: '6',
-            //strokeWidth: '2',
-            stroke: '#14B8AD',
-          },
-        }}
-        bezier
-        style={{ marginVertical: 0, borderRadius: 8 }}
-      />
+      <Chart labels={chartLabels} data={chartData} />
       <TouchableOpacity style={styles.addStyle} onPress={() => setIsModalOpen(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="white" />
       </TouchableOpacity>
+      {isConfirmOpen && 
+        <Confirm 
+          text='Apakah Anda ingin menghapus ini?' 
+          url={`${URL}/myapp/guladarah/delete`} 
+          id={idDelete} 
+          closeOpen={closeOpen} 
+          after={afterDelete} />}
       {isModalOpen && (
         <View style={styles.overlay}>
           <View style={styles.modal}>
@@ -188,18 +179,21 @@ const GulaDarah = () => {
             </View>
             <ScrollView contentContainerStyle={styles.scroll}>
               <View>
-                <Text style={styles.textInputLabel}>Hasil Pengukuran</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Hasil Pengukuran"
-                  placeholderTextColor={'#BBBBBB'}
-                  value={hasilPengukuran}
-                  onChangeText={setHasilPengukuran}
-                  keyboardType='numeric'
-                />
+                <Text style={styles.textInputLabel}>Hasil Pengukuran <Text style={{ color: 'red' }}>*</Text></Text>
+                <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'flex-end' }}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Hasil Pengukuran"
+                    placeholderTextColor={'#BBBBBB'}
+                    value={hasilPengukuran}
+                    onChangeText={setHasilPengukuran}
+                    keyboardType='numeric'
+                  />
+                  <Text style={styles.unitText}>mg/dL</Text>
+                </View>
               </View>
               <View>
-                <Text style={styles.textInputLabel}>Petugas</Text>
+                <Text style={styles.textInputLabel}>Petugas <Text style={{ color: 'red' }}>*</Text></Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Petugas"
@@ -209,7 +203,7 @@ const GulaDarah = () => {
                 />
               </View>
               <View>
-                <Text style={styles.textInputLabel}>Tempat</Text>
+                <Text style={styles.textInputLabel}>Tempat <Text style={{ color: 'red' }}>*</Text></Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Tempat"
@@ -297,7 +291,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 10,
-    elevation: 5,
+    elevation: 100,
     position: 'relative',
   },
   closeButton: {
@@ -307,6 +301,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   input: {
+    flex: 1,
     width: '100%',
     height: 35,
     borderRadius: 5,
@@ -315,13 +310,24 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 8,
   },
+  unitText: {
+    paddingLeft: 8,
+    fontSize: 16,
+    color: '#333',
+  },
   text: {
-    fontSize: 15,
-    padding: 5,
+    marginLeft: 10,
+    fontSize: 14,
     color: 'white',
   },
+  statusText: {
+    fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
+  },
   hasilText: {
-    fontSize: 20,
+    marginLeft: 10,
+    fontSize: 16,
     padding: 5,
     color: 'white',
     fontWeight: 'bold',

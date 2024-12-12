@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing} from 'react-native';
 import { Avatar, GiftedChat, Bubble, Send, IMessage } from 'react-native-gifted-chat';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import generateObjectId from '../ObjectID';
@@ -13,6 +13,8 @@ const ChatScreen = () => {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatbotResponse, setChatbotResponse] = useState<string>('');
+  const [isTyping, setIsTyping] = useState(false);
+  const typingDots = useState(new Animated.Value(0))[0];
 
   useEffect(() => {
     fetch(`${URL}/myapp/messages/`)
@@ -36,15 +38,37 @@ const ChatScreen = () => {
 
           setMessages(messagesFromApi);
         } else {
-          console.error("Data format error: 'message' not found");
+          //console.error("Data format error: 'message' not found");
         }
       })
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(typingDots, {
+        toValue: 1,
+        duration: 1000,
+        easing: Easing.circle,
+        useNativeDriver: true,
+      })
+    ).start();
+  }, [typingDots]);
+
   const onSend = useCallback((newMessages: Message[] = []) => {
     setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
-    console.log('New messages:', newMessages);
+    //console.log('New messages:', newMessages);
+    setIsTyping(true);
+    setMessages((previousMessages) => GiftedChat.append(previousMessages, [{
+      _id: generateObjectId(),
+      text: '...', // Placeholder text
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+        name: 'bot',
+        avatar: '../assets/images/august.jpg',
+      },
+    }]));
     fetch(`${URL}/myapp/messages/`, {
       method: 'POST',
       headers: {
@@ -59,7 +83,7 @@ const ChatScreen = () => {
       }),
     })
       .then((response) => response.json())
-      .then((data) => console.log('Success:', data))
+      .then((data) => console.log('Success:'))
       .catch((error) => console.error('Error:', error));
 
     //fetch('https://8a17-34-16-127-67.ngrok-free.app/chat/', {
@@ -75,7 +99,7 @@ const ChatScreen = () => {
     })
       .then((response) => response.json())
       .then((data: any) => {
-        console.log('Chatbot response:', data);
+        //console.log('Chatbot response:', data);
         fetch(`${URL}/myapp/messages/`, {
           method: 'POST',
           headers: {
@@ -88,9 +112,14 @@ const ChatScreen = () => {
             },
           }),
         }).then((response) => response.json())
-          .then((data) => console.log('Success:', data))
+          .then((data) => console.log('Success:'))
           .catch((error) => console.log('Error:', error));
-        setMessages((previousMessages) => GiftedChat.append(previousMessages, [{
+        setIsTyping(false);
+        setMessages((previousMessages) => {
+          const updatedMessages = previousMessages.filter(
+            (msg) => msg.text !== '...'
+          );
+          return GiftedChat.append(updatedMessages, [{
           //_id: Math.random().toString(36).substring(2,20) + Date.now().toString(12),
           _id: generateObjectId(),
           text: data.answer,
@@ -100,15 +129,39 @@ const ChatScreen = () => {
             name: 'bot',
             avatar: '../assets/images/august.jpg',
           },
-        }]))
+        }])})
       })
       .catch((error) => {
+        setIsTyping(false);
         console.error('Error getting chatbot response:', error);
       });
   }, []);
 
   const renderBubble = (props: any) => {
     let { currentMessage } = props;
+    if (currentMessage.text === '...' && currentMessage.user._id === 2) {
+      // Render bubble dengan animasi typing bot
+      const dotStyle = (index: number) => ({
+        opacity: typingDots.interpolate({
+          inputRange: [0, 1],
+          outputRange: index === 0 ? [1, 0] : index === 1 ? [0, 1] : [0, 0],
+        }),
+        marginHorizontal: 2,
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#14B8AD',
+      });
+
+      return (
+        <View style={styles.typingBubble}>
+          {[0, 1, 2].map((index) => (
+            <Animated.View key={index} style={dotStyle(index)} />
+          ))}
+        </View>
+      );
+    }
+
     const isFromCurrentUser = currentMessage.user._id === 1;
     return (
       <View style={{ marginRight: 10 }}>
@@ -175,6 +228,30 @@ const ChatScreen = () => {
     );
   }
 
+  const renderTypingIndicator = () => {
+    if (!isTyping) return null;
+
+    const dotStyle = (index: number) => ({
+      opacity: typingDots.interpolate({
+        inputRange: [0, 1],
+        outputRange: index === 0 ? [1, 0] : index === 1 ? [0, 1] : [0, 0],
+      }),
+      marginHorizontal: 2,
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: '#14B8AD',
+    });
+
+    return (
+      <View style={styles.typingContainer}>
+        {[0, 1, 2].map((index) => (
+          <Animated.View key={index} style={dotStyle(index)} />
+        ))}
+      </View>
+    );
+  };
+
   const scrollToBottomComponent = () => {
     return (
       <MaterialCommunityIcons name="chevron-double-down" size={22} color="#333333" />
@@ -182,18 +259,22 @@ const ChatScreen = () => {
   }
 
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={(messages) => onSend(messages)}
-      user={{
-        _id: 1,
-      }}
-      renderBubble={renderBubble}
-      alwaysShowSend
-      renderSend={renderSend}
-      scrollToBottom
-      scrollToBottomComponent={scrollToBottomComponent}
-    />
+    <View style={{ flex:1 }}>
+      <GiftedChat
+        messages={messages}
+        onSend={(messages) => onSend(messages)}
+        user={{
+          _id: 1,
+        }}
+        renderBubble={renderBubble}
+        alwaysShowSend
+        renderSend={renderSend}
+        scrollToBottom
+        scrollToBottomComponent={scrollToBottomComponent}
+      />
+      {//renderTypingIndicator()
+      }
+    </View>
   );
 }
 
@@ -206,5 +287,21 @@ const styles = StyleSheet.create({
     start: 0,
     top: 0,
     marginRight: 50,
+  },
+    typingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+  },
+  typingBubble: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 15,
+    margin: 5,
+    maxWidth: '75%',
   },
 });

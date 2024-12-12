@@ -47,8 +47,8 @@ const GuladarahTerakhir = () => {
 
     return (
       <TouchableOpacity style={styles.bloodSugarCard}>
-        <View style={styles.iconContainer}>
-          <Ionicons name="water" size={30} color="white" />
+        <View style={[styles.iconContainer, {backgroundColor:`${color}30`}]}>
+          <Ionicons name="water" size={30} color={color} />
         </View>
         <View style={styles.bloodSugarDetails}>
           <View style={styles.resultContainer}>
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   resultText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
   },

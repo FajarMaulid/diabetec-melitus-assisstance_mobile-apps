@@ -202,4 +202,15 @@ router.post("/profile", async (req, res) => {
   res.status(200).json({ message: "Profile updated" });
 });
 
+router.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error during logout:", err);
+      res.status(500).json({ message: "Internal server error" });
+    } else {
+      res.status(200).json({ message: "Logged out" });
+    }
+  });
+});
+
 module.exports = router;

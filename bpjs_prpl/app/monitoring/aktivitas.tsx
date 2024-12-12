@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { FontAwesome5 } from '@expo/vector-icons'
-import { LineChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
+import Confirm from '@/components/confirm';
+import Chart from '@/components/chart';
 
 const Aktivitas = () => {
   interface Item {
@@ -21,9 +21,11 @@ const Aktivitas = () => {
   const [aktivitas, setAktivitas] = useState('');
   const [durasi, setDurasi] = useState('');
   const [kaloriTerbakar, setKaloriTerbakar] = useState('');
-
   const [items, setItems] = useState<Item[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [error, setError] = useState('');
+  const [idDelete, setIdDelete] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,44 +42,8 @@ const Aktivitas = () => {
     fetchData();
   }, []);
 
-
-  const screenWidth = Dimensions.get('window').width;
-
-  const processDataForChart = () => {
-    if (!items || items.length === 0) {
-      // Jika items tidak ada atau kosong, kembalikan data default
-      return {
-        labels: ['No Data'],
-        datasets: [{ data: [0] }],
-      };
-    }
-
-    const labels = items
-      .map(item =>
-        new Date(item.createdAt).toLocaleDateString('id-ID', {
-          day: '2-digit',
-          month: '2-digit',
-        })
-      ).reverse(); // Membalik urutan labels
-
-    const data = items
-      .map(item => parseFloat(item.kaloriTerbakar))
-      .reverse(); // Membalik urutan data
-
-    return {
-      labels: labels.slice(-5), // Hanya gunakan 5 data terbaru
-      datasets: [
-        {
-          data: data.slice(-5), // Data untuk 5 pengukuran terakhir
-          strokeWidth: 2, // Ketebalan garis
-          color: () => `rgba(20, 184, 173, 1)`, // Warna garis
-        },
-      ],
-    };
-  };
-
   const getSportIcon = (sport: string) => {
-    const sportIcons: {[key: string]: string} = {
+    const sportIcons: { [key: string]: string } = {
       'Lari': 'running',
       'Sepeda': 'bicycle',
       'Bersepeda': 'bicycle',
@@ -89,19 +55,24 @@ const Aktivitas = () => {
     return sportIcons[sport] || 'walking';
   };
 
+  const deleteItem = (id: string) => {
+    setIsConfirmOpen(true);
+    setIdDelete(id);
+  }
+
   const renderActivityItem = ({ item }: { item: Item }) => (
     <TouchableOpacity style={styles.activityCard}>
       <View style={styles.iconContainer}>
-        <FontAwesome5 
-          name={getSportIcon(item.olahraga)} 
-          size={30} 
-          color="white" 
+        <FontAwesome5
+          name={getSportIcon(item.olahraga)}
+          size={30}
+          color="white"
         />
       </View>
       <View style={styles.activityDetails}>
         <Text style={styles.sportName}>{item.olahraga}</Text>
-          <Text style={styles.detailText}>Durasi: {item.durasi} menit</Text>
-          <Text style={styles.detailText}>Kalori: {item.kaloriTerbakar} kkal</Text>
+        <Text style={styles.detailText}>Durasi: {item.durasi} menit</Text>
+        <Text style={styles.detailText}>Kalori: {item.kaloriTerbakar} kkal</Text>
         <Text style={styles.dateText}>
           {new Date(item.createdAt).toLocaleString('id-ID', {
             day: 'numeric',
@@ -112,10 +83,19 @@ const Aktivitas = () => {
           })}
         </Text>
       </View>
+      <View style={{ flex: 1, alignItems: 'flex-end' }}>
+        <TouchableOpacity onPress={() => deleteItem(item._id)}>
+          <MaterialCommunityIcons name="delete" size={24} color="red" />
+        </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   );
 
   const handleSubmit = async () => {
+    if (!aktivitas || !durasi) {
+      setError('Aktivitas dan durasi harus diisi');
+      return;
+    }
     try {
       // e.preventDefault();
       const response = await fetch(`${URL}/myapp/aktivitas/`, {
@@ -126,10 +106,10 @@ const Aktivitas = () => {
         body: JSON.stringify({
           'olahraga': aktivitas,
           durasi: durasi,
-          // kaloriTerbakar: kaloriTerbakar,
+          kaloriTerbakar: kaloriTerbakar,
         }),
       });
-      console.log(response);
+      //console.log(response);
       const newItem = await response.json();
       if (response.ok && newItem.createdAt) {
         setItems((prevItems) => {
@@ -141,7 +121,7 @@ const Aktivitas = () => {
           });
         });
       } else {
-        console.error('Submit failed:', newItem);
+        //console.error('Submit failed:', newItem);
       }
     } catch (error) {
       console.error('Submit error:', error);
@@ -160,32 +140,39 @@ const Aktivitas = () => {
     }
   };
 
+  const chartData = items.map(item => parseFloat(item.kaloriTerbakar) || 0).reverse();
+  const chartLabels = items.map(item => new Date(item.createdAt).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: '2-digit',
+  })).reverse();
+
+  const closeOpen = () => {
+    setIsConfirmOpen(isConfirmOpen => !isConfirmOpen);
+  }
+
+  const afterDelete = () => {
+    const fetchData = async () => {
+      const response = await fetch(`${URL}/myapp/aktivitas/`);
+      const data = await response.json();
+      setItems(data);
+    };
+    fetchData();
+  }
+
   return (
     <View style={styles.container}>
-      <LineChart
-        data={processDataForChart()}
-        width={screenWidth - 20} // Lebar grafik (dengan margin)
-        height={220} // Tinggi grafik
-        chartConfig={{
-          //backgroundColor: '#e26a00',
-          backgroundGradientFrom: '#14B8AD',
-          //backgroundGradientTo: '#00d4ff',
-          decimalPlaces: 1, // Angka desimal
-          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          style: { borderRadius: 0 },
-          propsForDots: {
-            r: '6',
-            //strokeWidth: '2',
-            stroke: '#14B8AD',
-          },
-        }}
-        bezier
-        style={{ marginVertical: 0, borderRadius: 8 }}
-      />
+      <Chart data={chartData} labels={chartLabels} />
       <TouchableOpacity style={styles.addStyle} onPress={() => setIsModalOpen(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="white" />
       </TouchableOpacity>
+      {isConfirmOpen && (
+        <Confirm id={idDelete}
+          text="Apakah Anda ingin menghapus aktivitas ini?"
+          url={`${URL}/myapp/aktivitas/delete`}
+          closeOpen={closeOpen}
+          after={afterDelete}
+        />
+      )}
       {isModalOpen && (
         <View style={styles.overlay}>
           <View style={styles.modal}>
@@ -195,9 +182,10 @@ const Aktivitas = () => {
                 <Text style={styles.closeText}>x</Text>
               </TouchableOpacity>
             </View>
+            <Text style={{ color: 'red' }}>{error}</Text>
             <ScrollView contentContainerStyle={styles.scroll}>
               <View>
-                <Text style={styles.textInputLabel}>Aktivitas</Text>
+                <Text style={styles.textInputLabel}>Aktivitas <Text style={{ color: 'red' }}>*</Text></Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Aktivitas"
@@ -207,18 +195,23 @@ const Aktivitas = () => {
                 />
               </View>
               <View>
-                <Text style={styles.textInputLabel}>Durasi</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Durasi"
-                  placeholderTextColor={'#BBBBBB'}
-                  value={durasi}
-                  onChangeText={setDurasi}
-                  keyboardType='numeric'
-                />
+                <Text style={styles.textInputLabel}>Durasi (menit) <Text style={{ color: 'red' }}>*</Text></Text>
+                <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-around' }}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Durasi"
+                    placeholderTextColor={'#BBBBBB'}
+                    value={durasi}
+                    onChangeText={setDurasi}
+                    keyboardType='numeric'
+                  />
+                  <Text style={styles.unitText}>menit</Text>
+                </View>
               </View>
-              {/* <View>
-                  <Text>Kalori Terbakar</Text>
+              <View>
+                <Text style={styles.textInputLabel}>Kalori Terbakar</Text>
+                <Text style={{ fontSize: 12 }}>Apabila kosong akan otomatis diisi oleh AI</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'flex-end' }}>
                   <TextInput
                     style={styles.input}
                     placeholder="Kalori Terbakar"
@@ -227,7 +220,9 @@ const Aktivitas = () => {
                     onChangeText={setKaloriTerbakar}
                     keyboardType='numeric'
                   />
-                </View> */}
+                  <Text style={styles.unitText}>kkal</Text>
+                </View>
+              </View>
               <TouchableOpacity style={styles.button} onPress={handleSubmit} >
                 <Text style={{ color: 'white', fontSize: 20 }}>Submit</Text>
               </TouchableOpacity>
@@ -242,7 +237,7 @@ const Aktivitas = () => {
         keyExtractor={(item) => item._id}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Tidak ada aktivitas terakhir</Text>
+            <Text style={styles.emptyText}>Tidak ada data aktivitas</Text>
           </View>
         }
       />
@@ -281,7 +276,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   scroll: {
-     //flex: 1,
+    //flex: 1,
     // alignItems: 'center',
   },
   header: {
@@ -292,6 +287,11 @@ const styles = StyleSheet.create({
   textInputLabel: {
     fontSize: 20,
     color: 'steelblue',
+  },
+  unitText: {
+    paddingLeft: 8,
+    fontSize: 16,
+    color: '#333',
   },
   button: {
     width: '100%',
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 10,
-    elevation: 5,
+    elevation: 100,
     position: 'relative',
   },
   closeButton: {
@@ -317,6 +317,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   input: {
+    flex: 1,
     width: '100%',
     height: 35,
     borderRadius: 5,

@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { getGulaDarahCollection } = require('../config/db');
+require('dotenv').config();
+const { ObjectId } = require('mongodb');
 
 const getSessionUserId = (memoryStore) => {
   // Get the first session key
   const sessionKey = Object.keys(memoryStore.sessions)[0];
-  console.log("Session key:", sessionKey);
+  //console.log("Session key:", sessionKey);
   if (!sessionKey) {
     return null;
   }
@@ -13,7 +15,7 @@ const getSessionUserId = (memoryStore) => {
   try {
     // Parse the session string into an object
     const sessionData = JSON.parse(memoryStore.sessions[sessionKey]);
-    console.log("Session data:", sessionData);
+    //console.log("Session data:", sessionData);
     return sessionData.userId;
   } catch (error) {
     console.error("Error parsing session data:", error);
@@ -43,5 +45,14 @@ router.post('/', async (req, res) => {
   const result = await gulaDarahCollection.insertOne(newDocument);
   res.json(result);
 });
+
+router.post("/delete", async (req, res) => {
+  const gulaDarahCollection = await getGulaDarahCollection();
+  const result = await gulaDarahCollection.deleteOne({
+    _id: new ObjectId(req.body.id),
+  });
+  console.log('delete');
+  res.json(result);
+})
 
 module.exports = router;

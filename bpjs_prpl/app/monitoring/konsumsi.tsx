@@ -2,8 +2,9 @@ import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-nativ
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { LineChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import Chart from '@/components/chart';
+import Confirm from '@/components/confirm';
 
 const Konsumsi = () => {
   interface Item {
@@ -22,9 +23,11 @@ const Konsumsi = () => {
   const [nama, setNama] = useState('');
   const [massaOrVol, setMassaOrVol] = useState('');
   const [kaloriMasuk, setKaloriMasuk] = useState('');
-
   const [items, setItems] = useState<Item[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState('');
+  const [idDelete, setIdDelete] = useState('');
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,43 +44,13 @@ const Konsumsi = () => {
     fetchData();
   }, []);
 
-  const screenWidth = Dimensions.get('window').width;
-
-  const processDataForChart = () => {
-    if (!items || items.length === 0) {
-      // Jika items tidak ada atau kosong, kembalikan data default
-      return {
-        labels: ['No Data'],
-        datasets: [{ data: [0] }],
-      };
-    }
-
-    const labels = items
-      .map(item =>
-        new Date(item.createdAt).toLocaleDateString('id-ID', {
-          day: '2-digit',
-          month: '2-digit',
-        })
-      ).reverse(); // Membalik urutan labels
-
-    const data = items
-      .map(item => parseFloat(item.kaloriMasuk) || 0)
-      .reverse(); // Membalik urutan data
-
-    return {
-      labels: labels.slice(-5), // Hanya gunakan 5 data terbaru
-      datasets: [
-        {
-          data: data.slice(-5), // Data untuk 5 pengukuran terakhir
-          strokeWidth: 2, // Ketebalan garis
-          color: () => `rgba(20, 184, 173, 1)`, // Warna garis
-        },
-      ],
-    };
-  };
+  const deleteItem = (id: string) => {
+    setIsConfirmOpen(true);
+    setIdDelete(id);
+  }
 
   const getFoodTypeDetails = (type: string) => {
-    const foodTypeIcons: {[key: string]: {icon: string, color: string}} = {
+    const foodTypeIcons: { [key: string]: { icon: string, color: string } } = {
       'Makanan': { icon: 'food', color: '#4CAF50' },
       'Minuman': { icon: 'cup', color: '#2196F3' },
       'Snack': { icon: 'food-apple', color: '#FF9800' },
@@ -92,7 +65,7 @@ const Konsumsi = () => {
 
     return (
       <TouchableOpacity style={styles.konsumsiCard}>
-        <View style={[styles.iconContainer, { backgroundColor: `${color}50` }]}>
+        <View style={[styles.iconContainer, { backgroundColor: `${color}30` }]}>
           <MaterialCommunityIcons name={icon} size={30} color={color} />
         </View>
         <View style={styles.konsumsiDetails}>
@@ -102,14 +75,12 @@ const Konsumsi = () => {
               <Text style={styles.tipeText}>{item.tipe}</Text>
             </View>
           </View>
-          <View style={styles.detailRow}>
             <Text style={styles.detailText}>
               Massa/Volume: {item.massaOrVol}g
             </Text>
             <Text style={styles.kaloriText}>
               {item.kaloriMasuk} kcal
             </Text>
-          </View>
           <Text style={styles.dateText}>
             {new Date(item.createdAt).toLocaleString('id-ID', {
               day: 'numeric',
@@ -120,11 +91,20 @@ const Konsumsi = () => {
             })}
           </Text>
         </View>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          <TouchableOpacity onPress={() => deleteItem(item._id)}>
+            <MaterialCommunityIcons name="delete" size={24} color="red" />
+          </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     );
   };
 
   const handleSubmit = async () => {
+    if (!tipe || !nama || !massaOrVol) {
+      setError('Semua dengan * harus diisi');
+      return;
+    }
     try {
       // e.preventDefault();
       const response = await fetch(`${URL}/myapp/konsumsi/`, {
@@ -151,7 +131,7 @@ const Konsumsi = () => {
           });
         });
       } else {
-        console.error('Submit failed:', newItem);
+        //console.error('Submit failed:', newItem);
       }
     } catch (error) {
       console.error('Submit error:', error);
@@ -161,6 +141,7 @@ const Konsumsi = () => {
       setMassaOrVol('');
       setKaloriMasuk('');
       setIsModalOpen(false);
+      setError('');
       const fetchData = async () => {
         const response = await fetch(`${URL}/myapp/konsumsi/`);
         const data = await response.json();
@@ -171,32 +152,39 @@ const Konsumsi = () => {
     }
   };
 
+  const closeOpen = () => {
+    setIsConfirmOpen(isConfirmOpen => !isConfirmOpen);
+  }
+
+  const afterDelete = () => {
+    const fetchData = async () => {
+      const response = await fetch(`${URL}/myapp/konsumsi/`);
+      const data = await response.json();
+      setItems(data);
+    };
+    fetchData();
+  }
+
+  const chartData = items.map(item => parseFloat(item.kaloriMasuk) || 0).reverse();
+  const chartLabels = items.map(item => new Date(item.createdAt).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: '2-digit',
+  })).reverse();
+
   return (
     <View style={styles.container}>
-      <LineChart
-        data={processDataForChart()}
-        width={screenWidth - 20} // Lebar grafik (dengan margin)
-        height={220} // Tinggi grafik
-        chartConfig={{
-          //backgroundColor: '#e26a00',
-          backgroundGradientFrom: '#14B8AD',
-          //backgroundGradientTo: '#00d4ff',
-          decimalPlaces: 1, // Angka desimal
-          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          style: { borderRadius: 0 },
-          propsForDots: {
-            r: '6',
-            //strokeWidth: '2',
-            stroke: '#14B8AD',
-          },
-        }}
-        bezier
-        style={{ marginVertical: 0, borderRadius: 8 }}
-      />
+      <Chart data={chartData} labels={chartLabels} />
       <TouchableOpacity style={styles.addStyle} onPress={() => setIsModalOpen(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="white" />
       </TouchableOpacity>
+      {isConfirmOpen && (
+        <Confirm id={idDelete}
+          text="Apakah Anda tetap ingin menghapus ini?"
+          url={`${URL}/myapp/konsumsi/delete`}
+          closeOpen={closeOpen}
+          after={afterDelete}
+        />
+      )}
       {isModalOpen && (
         <View style={styles.overlay}>
           <View style={styles.modal}>
@@ -206,19 +194,23 @@ const Konsumsi = () => {
                 <Text style={styles.closeText}>x</Text>
               </TouchableOpacity>
             </View>
+            <Text style={{ color: 'red' }}>{error}</Text>
             <ScrollView contentContainerStyle={styles.scroll}>
               <View>
-                <Text style={styles.textInputLabel}>Tipe</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Tipe"
-                  placeholderTextColor={'#BBBBBB'}
-                  value={tipe}
-                  onChangeText={setTipe}
-                />
+                <Text style={styles.textInputLabel}>Tipe <Text style={{ color: 'red' }}>*</Text></Text>
+                <Picker
+                  selectedValue={tipe}
+                  onValueChange={(itemValue) => setTipe(itemValue)}
+                >
+                  <Picker.Item label="Makanan" value="Makanan" />
+                  <Picker.Item label="Minuman" value="Minuman" />
+                  <Picker.Item label="Buah" value="Buah" />
+                  <Picker.Item label="Sayur" value="Sayur" />
+                  <Picker.Item label="Lainnya" value="Lainnya" />
+                </Picker>
               </View>
               <View>
-                <Text style={styles.textInputLabel}>Nama</Text>
+                <Text style={styles.textInputLabel}>Nama <Text style={{ color: 'red' }}>*</Text></Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Nama"
@@ -229,26 +221,33 @@ const Konsumsi = () => {
                 />
               </View>
               <View>
-                <Text style={styles.textInputLabel}>Massa Atau Volume</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Massa Atau Volume"
-                  placeholderTextColor={'#BBBBBB'}
-                  value={massaOrVol}
-                  onChangeText={setMassaOrVol}
-                  keyboardType='numeric'
-                />
+                <Text style={styles.textInputLabel}>Massa Atau Volume <Text style={{ color: 'red' }}>*</Text></Text>
+                <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-around' }}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Massa Atau Volume"
+                    placeholderTextColor={'#BBBBBB'}
+                    value={massaOrVol}
+                    onChangeText={setMassaOrVol}
+                    keyboardType='numeric'
+                  />
+                  <Text style={styles.unitText}>gram</Text>
+                </View>
               </View>
               <View>
                 <Text style={styles.textInputLabel}>Kalori Masuk</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Kalori Masuk"
-                  placeholderTextColor={'#BBBBBB'}
-                  value={kaloriMasuk}
-                  onChangeText={setKaloriMasuk}
-                  keyboardType='numeric'
-                />
+                <Text style={{ fontSize: 12 }}>Apabila kosong akan otomatis diisi oleh AI</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-around' }}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Kalori Masuk"
+                    placeholderTextColor={'#BBBBBB'}
+                    value={kaloriMasuk}
+                    onChangeText={setKaloriMasuk}
+                    keyboardType='numeric'
+                  />
+                  <Text style={styles.unitText}>kkal</Text>
+                </View>
               </View>
               <TouchableOpacity style={styles.button} onPress={handleSubmit} >
                 <Text style={{ color: 'white', fontSize: 20 }}>Submit</Text>
@@ -277,7 +276,8 @@ const styles = StyleSheet.create({
     //flex: 1, // Ensure that the container takes up the full screen
     alignItems: 'center', // Center the content horizontally
     justifyContent: 'center', // Center the content vertically
-    height: '91%',
+    height: '92%',
+    top: '3%',
   },
   itemContainer: {
     marginBottom: 10,
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 10,
-    elevation: 5,
+    elevation: 100,
     position: 'relative',
   },
   closeButton: {
@@ -338,6 +338,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   input: {
+    flex: 1,
     width: '100%',
     height: 35,
     borderRadius: 5,
@@ -345,6 +346,11 @@ const styles = StyleSheet.create({
     borderColor: '#BBBBBB',
     marginBottom: 10,
     padding: 8,
+  },
+  unitText: {
+    paddingLeft: 8,
+    fontSize: 16,
+    color: '#333',
   },
   text: {
     fontSize: 15,
@@ -361,10 +367,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
+    flex : 1,
     borderRadius: 30,
     width: 60,
     height: 60,
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
     marginRight: 15,
   },
@@ -410,7 +417,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: 'rgba(255,255,255,0.9)',
   },
   loadingContainer: {
     alignItems: 'center',
@@ -425,7 +432,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   emptyText: {
-    color: 'white',
+    color: '#888',
     fontSize: 16,
   },
 });

@@ -40,7 +40,8 @@ export default KontrolTerakhir
 
 const styles = StyleSheet.create({
   innerContainer1: {
-    // flex: 1,
+     //flex: 1,
+    alignSelf: 'center',
     backgroundColor: '#14B8AD',
     justifyContent: 'center',
     alignItems: 'center',

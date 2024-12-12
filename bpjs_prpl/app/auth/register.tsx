@@ -56,6 +56,7 @@ const Register = () => {
         }
         if (data.non_field_errors[0]) {
           setError(data.non_field_errors[0]);
+          console.log('Non field error:', data.non_field_errors[0]);
         }
       }
 
@@ -67,6 +68,7 @@ const Register = () => {
       //}
       if (error) {
         setError(error.detail);
+        console.error('Error:', error.detail);
       }
     } finally {
       setLoading(false);
@@ -106,6 +108,7 @@ const Register = () => {
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Password</Text>
+        <Text>Minimal 8 karakter</Text>
         <TextInput
           style={styles.input}
           placeholder="Password"
