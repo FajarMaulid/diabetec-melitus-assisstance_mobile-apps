@@ -1,6 +1,6 @@
-import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Button, TextInput, TouchableOpacity, Modal } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import { ScrollView, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { FontAwesome5 } from '@expo/vector-icons'
 import Confirm from '@/components/confirm';
@@ -165,15 +165,27 @@ const Aktivitas = () => {
       <TouchableOpacity style={styles.addStyle} onPress={() => setIsModalOpen(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="white" />
       </TouchableOpacity>
-      {isConfirmOpen && (
+      <Modal
+        visible={isConfirmOpen}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={closeOpen}
+      >
+        <View style={styles.overlay}>
         <Confirm id={idDelete}
           text="Apakah Anda ingin menghapus aktivitas ini?"
           url={`${URL}/myapp/aktivitas/delete`}
           closeOpen={closeOpen}
           after={afterDelete}
         />
-      )}
-      {isModalOpen && (
+        </View>
+      </Modal>
+      <Modal
+        visible={isModalOpen}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setIsModalOpen(false)}
+      >
         <View style={styles.overlay}>
           <View style={styles.modal}>
             <View style={styles.header}>
@@ -229,8 +241,8 @@ const Aktivitas = () => {
               {/* <Button title="Submit" onPress={handleSubmit} /> */}
             </ScrollView>
           </View>
-        </View>)
-      }
+        </View>
+      </Modal>
       <FlatList
         data={items}
         renderItem={renderActivityItem}
@@ -265,13 +277,14 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   overlay: {
+    paddingTop: 100,
     flex: 1,
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    //backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     alignItems: 'center',
     zIndex: 1,
   },

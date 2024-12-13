@@ -1,6 +1,6 @@
-import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Modal, Button, TextInput, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import { ScrollView, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import Confirm from '@/components/confirm';
 import Chart from '@/components/chart';
@@ -121,13 +121,13 @@ const GulaDarah = () => {
           <Text style={[styles.statusText]}>{item.status}</Text>
         </View>
       </View>
-      <View style={{ marginBottom: 10, flexDirection: 'column', justifyContent:'center' }}>
+      <View style={{ marginBottom: 10, flexDirection: 'column', justifyContent: 'center' }}>
         <View>
           <Text style={styles.text}>Petugas: {item.petugas}</Text>
           <Text style={styles.text}>Tempat: {item.tempat}</Text>
           <Text style={styles.text}>Dibuat Pada: {new Date(item.createdAt).toLocaleString()}</Text>
         </View>
-        <View style={{ justifyContent:'flex-end', alignSelf:'flex-end' }}>
+        <View style={{ justifyContent: 'flex-end', alignSelf: 'flex-end' }}>
           <TouchableOpacity onPress={() => deleteItem(item._id)}>
             <MaterialCommunityIcons name="delete" size={24} color="red" />
           </TouchableOpacity>
@@ -161,14 +161,27 @@ const GulaDarah = () => {
       <TouchableOpacity style={styles.addStyle} onPress={() => setIsModalOpen(true)}>
         <MaterialCommunityIcons name="plus" size={24} color="white" />
       </TouchableOpacity>
-      {isConfirmOpen && 
-        <Confirm 
-          text='Apakah Anda ingin menghapus ini?' 
-          url={`${URL}/myapp/guladarah/delete`} 
-          id={idDelete} 
-          closeOpen={closeOpen} 
-          after={afterDelete} />}
-      {isModalOpen && (
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isConfirmOpen}
+        onRequestClose={() => setIsConfirmOpen(false)}
+      >
+        <View style={styles.overlay}>
+        <Confirm
+          text='Apakah Anda ingin menghapus ini?'
+          url={`${URL}/myapp/guladarah/delete`}
+          id={idDelete}
+          closeOpen={closeOpen}
+          after={afterDelete} />
+          </View>
+      </Modal>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+      >
         <View style={styles.overlay}>
           <View style={styles.modal}>
             <View style={styles.header}>
@@ -218,10 +231,9 @@ const GulaDarah = () => {
               {/* <Button title="Submit" onPress={handleSubmit} /> */}
             </ScrollView>
           </View>
-        </View>)
-      }
+        </View>
+      </Modal>
       <FlatList
-
         data={processedItems} // Menggunakan data yang sudah diproses
         renderItem={renderBloodSugarItem} // Menggunakan renderItem untuk menampilkan setiap item
         ListEmptyComponent={
@@ -238,7 +250,7 @@ const styles = StyleSheet.create({
   container: {
     //flex: 1, // Ensure that the container takes up the full screen
     alignItems: 'center', // Center the content horizontally
-    justifyContent: 'center', // Center the content vertically
+    //justifyContent: 'center', // Center the content vertically
     height: '92%',
     top: '3%',
   },
@@ -254,13 +266,13 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   overlay: {
-    flex: 1,
     position: 'absolute',
+    paddingTop: 100,
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    //backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     alignItems: 'center',
     zIndex: 1,
   },

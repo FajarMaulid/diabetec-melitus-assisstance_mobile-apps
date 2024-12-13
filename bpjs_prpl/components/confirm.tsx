@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React, { useEffect } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {  } from 'react-native-gesture-handler';
 
 interface confirmProps {
   id: string;

@@ -142,11 +142,21 @@ const Profile = () => {
       </View>
 
       {/* Modal for editing profile */}
-      {isConfirmOpen && (<Confirm text='Apakah Anda ingin Log Out dari aplikasi?' after={handleLogOut} url={`${API_URL}/logout/`} id='' closeOpen={closeOpen} />)}
+      <Modal
+        transparent={true}
+        visible={isConfirmOpen}
+        onRequestClose={() => setIsConfirmOpen(false)}
+        animationType='fade'
+      >
+        <View style={styles.overlay}>
+          <Confirm text='Apakah Anda ingin Log Out dari aplikasi?' after={handleLogOut} url={`${API_URL}/logout/`} id='' closeOpen={closeOpen} />
+          </View>
+      </Modal>
       <Modal
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
+        animationType='fade'
       >
         <View style={styles.overlay}>
           <View style={styles.modal}>
@@ -353,6 +363,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   overlay: {
+    paddingTop: 100,
     flex: 1,
     position: 'absolute',
     top: 0,

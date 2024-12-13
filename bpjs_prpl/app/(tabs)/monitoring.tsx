@@ -1,6 +1,6 @@
-import { View, Text, FlatList, StyleSheet, Button, TextInput } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Button, TextInput, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { NativeViewGestureHandler, GestureHandlerRootView, ScrollView, TouchableOpacity, gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import { NativeViewGestureHandler, GestureHandlerRootView, ScrollView, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { router } from 'expo-router';
 import Aktivitas from '../monitoring/aktivitas';
@@ -34,7 +34,7 @@ const Monitoring = () => {
   }
 
   return (
-    <View>
+    <View style={{  }}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={{ height: 10 }} />
         <TouchableOpacity 
@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   result: {
-    //flex: 1,
     top: 0,
     left: 0,
     right: 0,
