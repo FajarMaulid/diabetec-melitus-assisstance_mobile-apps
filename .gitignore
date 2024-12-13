@@ -9,6 +9,9 @@ bpjs_prpl/*.key
 bpjs_prpl/*.mobileprovision
 bpjs_prpl/*.orig.*
 bpjs_prpl/web-build/
+bpjs_prpl/web-build-*
+bpjs_prpl/.expo-shared/
+bpjs_prpl/.env
 
 # macOS
 bpjs_prpl/.DS_Store
@@ -18,9 +21,21 @@ bpjs_prpl/expo-env.d.ts
 
 # Django
 server/.env
+<<<<<<< HEAD
 server/myenv
 server/__pycache__
 server/myapp/__pycache__
 server/myapp/migrations
 server/server/__pycache__
 bpjs_prpl/.env
+=======
+bpjs_prpl/.env
+bpjs_prpl/env.tsx
+=======
+myenv
+>>>>>>> origin/front
+**/__pycache__/
+
+simple_backend/.env
+simple_backend/node_modules/
+>>>>>>> front

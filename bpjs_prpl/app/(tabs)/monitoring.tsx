@@ -1,64 +1,112 @@
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Button, TextInput, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { NativeViewGestureHandler, GestureHandlerRootView, ScrollView, gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { router } from 'expo-router';
+import Aktivitas from '../monitoring/aktivitas';
+import Konsumsi from '../monitoring/konsumsi';
+import GulaDarah from '../monitoring/gulaDarah';
 
 const Monitoring = () => {
-  interface Item {
-    _id: string;
-    category: string;
-    password: string;
-    username: string;
-    email: string;
+  const [toggleAktivitas, setToggleAktivitas] = useState(false);
+  const [toggleKonsumsi, setToggleKonsumsi] = useState(false);
+  const [toggleGulaDarah, setToggleGulaDarah] = useState(false);
+
+  const handlePressAktivitas = () => {
+    //router.push('../monitoring/aktivitas');
+    setToggleAktivitas(true);
+    setToggleKonsumsi(false);
+    setToggleGulaDarah(false);
   }
 
-  const [items, setItems] = useState<Item[]>([]);
+  const handlePressKonsumsi = () => {
+    //router.push('../monitoring/konsumsi');
+    setToggleAktivitas(false);
+    setToggleKonsumsi(true);
+    setToggleGulaDarah(false);
+  }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch('http://localhost:8000/myapp/');
-      const data = await response.json();
-      
-      
-      // Assuming data is an array of user objects
-      // const formattedData = data.map((user: any) => ({
-      //   _id: user._id,
-      //   username: user.username || 'No username', // Handle cases with no username
-      //   email: user.email || 'No email', // Handle cases with no email
-      // }));
-      
-      setItems(data);
-    };
+  const handlePressGulaDarah = () => {
+    //router.push('../monitoring/gulaDarah');
+    setToggleAktivitas(false);
+    setToggleKonsumsi(false);
+    setToggleGulaDarah(true);
+  }
 
-    fetchData();
-  }, []);
-
-  console.log(items);
   return (
-    <View style={styles.container}>
-      <Text>Items:</Text>
-      <FlatList
-        data={items}
-        keyExtractor={(item) => item._id.toString()} // Pastikan _id diubah menjadi string
-        renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Text>Username: {item.username}</Text>
-            <Text>Email: {item.email}</Text>
-            <Text>Category: {item.category}</Text>
-            <Text>Password: {item.password}</Text>
-          </View>
-        )}
-      />
+    <View style={{  }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={{ height: 10 }} />
+        <TouchableOpacity 
+          onPress={handlePressAktivitas} 
+          style={[styles.button, toggleAktivitas && styles.buttonPressed]} 
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.text, toggleAktivitas && styles.textPressed]} >Aktivitas</Text>
+        </TouchableOpacity>
+        <View style={{ height: 10 }} />
+        <TouchableOpacity 
+          onPress={handlePressKonsumsi} 
+          style={[styles.button, toggleKonsumsi && styles.buttonPressed]} 
+          activeOpacity={0.7} 
+        >
+          <Text style={[styles.text, toggleKonsumsi && styles.textPressed]}>Konsumsi</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          onPress={handlePressGulaDarah} 
+          style={[styles.button, toggleGulaDarah && styles.buttonPressed]} 
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.text, toggleGulaDarah && styles.textPressed]}>Gula Darah</Text>
+        </TouchableOpacity>
+      </ScrollView>
+      <View style={styles.result}>
+        {toggleKonsumsi ? (<Konsumsi />) : null}
+        {toggleAktivitas ? (<Aktivitas />) : null}
+        {toggleGulaDarah ? (<GulaDarah />) : null}
+      </View>
     </View>
-  );
+  )
 }
 
-export default Monitoring;
-
-
 const styles = StyleSheet.create({
+  text: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
   container: {
-    flex: 1, // Ensure that the container takes up the full screen
+    //flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
-  itemContainer: {
-    marginBottom: 10, // Add some space between items
+  result: {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    //alignItems: 'center',
+    zIndex: 1,
   },
+  button: {
+    backgroundColor: '#14B8AD',
+    borderRadius: 15,
+    margin: 10,
+    padding: 10,
+  },
+  buttonPressed: {
+    backgroundColor: '#ffffff',
+    borderColor: '#14B8AD',
+    borderRadius: 15,
+    borderWidth: 2,
+    margin: 10,
+    padding: 10,
+  },
+  textPressed:{
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#14B8AD',
+  }
 });
+
+export default gestureHandlerRootHOC(Monitoring);

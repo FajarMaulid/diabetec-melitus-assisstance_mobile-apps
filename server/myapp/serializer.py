@@ -4,6 +4,10 @@ from db_connection import user_collection
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from datetime import datetime
+<<<<<<< HEAD
+=======
+from django.contrib.auth.hashers import make_password
+>>>>>>> front
 
 class UserSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
@@ -27,7 +31,9 @@ class UserSerializer(serializers.Serializer):
         password = validated_data.pop('password1')
 
         user = User.objects.create_user(**validated_data)
+        password = make_password(password)
         user_collection.insert_one({'email': user.email, 'password': password, 'username': user.username})
+        user.id = str(user_collection.find_one({'email': user.email})['_id'])
 
         user.set_password(password)
         return user
@@ -53,5 +59,8 @@ class KonsumsiSerializer(serializers.Serializer):
     kaloriMasuk = serializers.FloatField(default=0)
     # jadwal = serializers.DateTimeField(required=True)
     createdAt = serializers.DateTimeField(default=datetime.now)
+<<<<<<< HEAD
 
     
+=======
+>>>>>>> front

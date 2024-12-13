@@ -14,4 +14,9 @@ db = client[os.getenv('DATABASE_NAME')]
 user_collection = db['User']
 aktivitasFisik = db['aktivitasFisik']
 gulaDarah = db['gulaDarah']
+<<<<<<< HEAD
 konsumsi = db['konsumsi']
+=======
+konsumsi = db['konsumsi']
+messages = db['messages']
+>>>>>>> front

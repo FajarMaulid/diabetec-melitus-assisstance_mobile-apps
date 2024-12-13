@@ -10,10 +10,10 @@ import TopHomeBar from '@/components/topHomeBar'
 
 const TabsLayout = () => {
   return (
-    <Tabs screenOptions={{ tabBarInactiveBackgroundColor: '#00852A', tabBarInactiveTintColor: 'white' }}>
-      <Tabs.Screen name="home" options={{ title: 'Home', headerTitle: () => <TopHomeBar />, headerRight:() => <MiniProfile />, headerTitleAlign: 'left', tabBarIcon: ({color}) => <MaterialCommunityIcons size={19} name="home" color = {color} /> }} />
+    <Tabs screenOptions={{ tabBarInactiveBackgroundColor: '#14B8AD', tabBarInactiveTintColor: 'white', tabBarActiveTintColor:'#14B8AD' }}>
+      <Tabs.Screen name="home" options={{ title: 'Home', headerTitle: () => <TopHomeBar />, headerRight:() => <MiniProfile />, headerTitleAlign: 'left', tabBarIcon: ({color}) => <MaterialCommunityIcons size={24} name="home" color = {color} /> }} />
       <Tabs.Screen name="chat" options={{ title: 'Chat', headerTitleAlign: 'center', tabBarIcon: ({color}) => <MaterialCommunityIcons size={19} name="message" color = {color} /> }} />
-      <Tabs.Screen name="monitoring" options={{ title: 'Monitorning', headerTitleAlign: 'center', tabBarIcon: ({color}) => <MaterialCommunityIcons size={19} name="calendar" color = {color} /> }} />
+      <Tabs.Screen name="monitoring" options={{ title: 'Monitoring', headerTitleAlign: 'center', tabBarIcon: ({color}) => <MaterialCommunityIcons size={19} name="calendar" color = {color} /> }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile', headerTitleAlign: 'center', tabBarIcon: ({color}) => <MaterialCommunityIcons size={19} name="account" color = {color} /> }} />
     </Tabs>
   )

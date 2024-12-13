@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-xb97iu*i1c1qwr3ksc*&p4+v1$-ttk$w&gddhifmmm1_4oppq=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.0.2.2', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -133,3 +133,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Penyimpanan sesi menggunakan database
+SESSION_COOKIE_NAME = 'sessionid'  # Nama cookie sesi
+SESSION_COOKIE_AGE = 3600  # Durasi sesi (1 jam)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Sesi tidak kedaluwarsa saat browser ditutup
+

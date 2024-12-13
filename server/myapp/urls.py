@@ -11,4 +11,10 @@ urlpatterns = [
     path('konsumsi/terakhir/', views.LatestKonsumsiData.as_view(), name='konsumsi-terakhir'),
     path('guladarah/', views.GulaDarahListView.as_view(), name='guladarah-list'),
     path('guladarah/terakhir/', views.LatestGulaDarahData.as_view(), name='guladarah-terakhir'),
+<<<<<<< HEAD
 ]
+=======
+    path('messages/', views.Message.as_view(), name='message'),
+    path('chat/', views.ChatBot.as_view(), name='chat'),
+]
+>>>>>>> front

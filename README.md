@@ -1,50 +1,44 @@
-# Welcome to your Expo app 👋
+# Welcome to React Native Django App 🚀
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This project combines the power of [React Native Expo](https://expo.dev) for a seamless cross-platform mobile app experience with [Django](https://www.djangoproject.com/) as a robust and scalable backend framework.
 
-## Get started
+## Get Started
 
-1. Install dependencies
+### 1. Install Frontend Dependencies
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+To get the mobile app up and running, install the required npm dependencies:
 
 ```bash
-npm run reset-project
+cd bpjs_prpl
+npm install
+```
+### 2. Install Backend dependencies
+
+For the backend, make sure to have all necessary Python packages installed:
+
+```bash
+cd server
+pip install -r reqirements.txt
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 3. Run the Backend
 
-## Learn more
+Ensure your Django backend is running by using the following command:
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+cd server
+python manage.py runserver
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+This will start the backend on `http://127.0.0.1:8000/`.
 
-## Join the community
+### 4. Run the Frontend
 
-Join our community of developers creating universal apps.
+Now, start the React Native Expo app:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+cd bpjs_prpl
+npx expo start
+```
+
+This will open a new tab in your browser with the Expo Developer Tools. From here, you can run the app on an emulator or your physical device using the QR code with Expo Go.
