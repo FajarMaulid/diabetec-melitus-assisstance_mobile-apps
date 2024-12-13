@@ -1,7 +1,3 @@
-Here’s a sample README file for a project using **React Native (Expo)** for the frontend and **Express.js** for the backend. This README will help you document the steps to set up and run both parts of the application.
-
----
-
 # Welcome to the React Native Expo & Express App 🚀
 
 This project uses **React Native with Expo** for the frontend, providing a seamless cross-platform mobile app experience, and **Express.js** for the backend, delivering a powerful and flexible server framework.
